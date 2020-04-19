@@ -12,6 +12,7 @@ import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
 import tutorial691online.visitors.ThrowsClauseVisitor;
+import tutorial691online.visitors.TryVisitor;
 
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
@@ -49,6 +50,17 @@ public class ExceptionFinder {
 				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
 				parsedCompilationUnit.accept(throwUncheckedException1);
 				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
+			
+				//Exception Metrics: Try Quantity & Try Size-LOC
+				TryVisitor tryVisitor = new TryVisitor();
+				parsedCompilationUnit.accept(tryVisitor);
+				tryBlockCount = tryVisitor.getTryBlockCount();
+				tryBlockLOC = tryVisitor.getTryBlockLOC();
+				
+				//CompilationUnitDeclaration d = unit.getElementName();
+				SampleHandler.printMessage("File(" + unit.getElementName() + 
+											"),# Try Blocks:" + tryBlockCount + 
+											",# Try-LOC:" + tryBlockLOC);
 			}
 		}
 	}
