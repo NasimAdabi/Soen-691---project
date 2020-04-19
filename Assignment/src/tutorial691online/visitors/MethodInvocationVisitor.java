@@ -1,10 +1,20 @@
 package tutorial691online.visitors;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import tutorial691online.handlers.SampleHandler;
@@ -19,11 +29,14 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	private int logPrintDefaultStatements = 0;
 	private int thrownStatements = 0;
 	private int numberofCheckedException =0;
+	private int flowHandlingAction = 0;
 	private String statementAccordingToVisitorType;
-	private MethodInvocation invokedMethodNode;
 	private String exceptionName;
 	private ITypeBinding exceptionType;
 	private String exceptionTypeName;
+	private MethodInvocation currentNode;
+	private MethodInvocation invokedMethodNode;
+	private static Map<String, String> flowHandlingActionStatements = new HashMap<String, String>();
 	
 	public MethodInvocationVisitor(String statement) {
 		this.statementAccordingToVisitorType = statement;
@@ -31,8 +44,9 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	
 	@Override
 	public boolean visit(MethodInvocation node) {
+		this.currentNode = node;
 		
-		// log statement inside catch
+		//Log statement inside catch
 		if(this.statementAccordingToVisitorType == "LogCatchSwitch"){  
 			String nodeName = node.getName().toString();
 			//SampleHandler.printMessage("Invoked nodeName::::::" + nodeName);
@@ -41,10 +55,13 @@ public class MethodInvocationVisitor extends ASTVisitor{
 			}
 			
 			if(IsLoggingStatement(nodeName) && IsThrownStatement(nodeName)) {
-				
 				thrownStatements += 1;
 			}
 
+			//Flow Handling Actions: Method call/Log inside Catch
+			if(IsLoggingStatement(nodeName) || isMethodCall(node)) {
+				flowHandlingAction ++;
+			}
 		}
 		if(this.statementAccordingToVisitorType == "TryBlock") {
 			this.invokedMethodNode = node;
@@ -82,6 +99,33 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		return super.visit(node);
 	}
 
+	public boolean isMethodCall(MethodInvocation node) {
+		IMethodBinding methodNode = currentNode.resolveMethodBinding();
+		
+		if(methodNode != null) {
+			IMethodBinding binding = methodNode.getMethodDeclaration();
+			
+
+			Expression e = node.getExpression(); 
+			if(e instanceof Name) {
+				Name name = (Name) e;
+				String type = name.resolveBinding() + "";
+				//SampleHandler.printMessage("Object Name:" + n.resolveBinding().getName() + ", Method name:" + node.getName().getFullyQualifiedName());
+				//SampleHandler.printMessage("type:" + name.resolveBinding());
+				if(!type.contains("java.util.logging.Logger")) {
+					flowHandlingActionStatements.put(binding.getName(), "Method Call");
+				}
+			} 
+
+			//if(binding != null) {
+				//SampleHandler.printMessage("Type: "+ type.toString()+ ",method: " + methodName + ",calls:" + type.getFullyQualifiedName());	
+				return true;
+			//}
+		}
+		
+		return false;
+	}
+	
 	public MethodInvocation getInvokedMethod() {
 		return invokedMethodNode;
 	}
@@ -171,6 +215,10 @@ public class MethodInvocationVisitor extends ASTVisitor{
         }
         return false;
     }
+
+	public Map<String, String> getFlowHandlingActions() {
+		return flowHandlingActionStatements;
+	}
 	
 	public int getLogPrintDefaultStatements() {
 		return logPrintDefaultStatements;

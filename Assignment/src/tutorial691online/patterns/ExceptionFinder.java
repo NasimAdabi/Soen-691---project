@@ -3,7 +3,11 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.JavaModelException;
@@ -26,8 +30,9 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> catchMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
 	private static int tryBlockCount = 0;
-	private static int tryBlockSLOC = 0;
-	private static ArrayList<String> tryBlockSLOCStatements = new ArrayList<String>();
+	private static int tryBlockLOC = 0;
+	private static ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
+	private static int flowHandlingActionsCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
@@ -38,12 +43,17 @@ public class ExceptionFinder {
 				// AST node
 				CompilationUnit parsedCompilationUnit = parse(unit);
 
-//				//Pattern 1: log & throw
-//				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
-//				parsedCompilationUnit.accept(exceptionVisitor);
-//				// Give detail of detection
+				//Pattern 1: log & throw
+				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
+				parsedCompilationUnit.accept(exceptionVisitor);
+				// Give detail of detection
 //				getMethodsWithTargetCatchClauses(exceptionVisitor);
-//
+//				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
+
+				for (Map.Entry<String, String> actionStatement : exceptionVisitor.getActionStatements().entrySet()) {
+					SampleHandler.printMessage("Actions Statement: " + actionStatement.getKey() + ", Action:" + actionStatement.getValue());
+				}
+				
 //				// Pattern 3: overcatch
 //				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
 //				parsedCompilationUnit.accept(overCatchVisitor);
@@ -58,8 +68,8 @@ public class ExceptionFinder {
 				TryVisitor tryVisitor = new TryVisitor();
 				parsedCompilationUnit.accept(tryVisitor);
 				tryBlockCount = tryVisitor.getTryBlockCount();
-				tryBlockSLOC = tryVisitor.getTryBlockSLOC();
-				tryBlockSLOCStatements = tryVisitor.getTryBlockSLOCStatements();
+				tryBlockLOC = tryVisitor.getTryBlockSLOC();
+				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
 				//Exception Metrics: Try Size-SLOC
 				List comments = parsedCompilationUnit.getCommentList();
@@ -70,8 +80,8 @@ public class ExceptionFinder {
 				//CompilationUnitDeclaration d = unit.getElementName();
 				SampleHandler.printMessage("File(" + unit.getElementName() + 
 											"),# Try Blocks:" + tryBlockCount + 
-											",# Try-SLOC:" + tryBlockSLOC);
-				SampleHandler.printMessage("Satatementttttt:" + tryBlockSLOCStatements);
+											",# Try-LOC:" + tryBlockLOC);
+//				SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 			}
 		}
 	}
@@ -94,7 +104,6 @@ public class ExceptionFinder {
 			// suspectMethods.put(findMethodForThrow(throwStatement), "throwStatement");
 			throwMethods.put(findMethodForThrow(throwStatement), "LogThrow");
 		}
-
 	}
 
 	private void getMethodsWithTargetTryClauses(OverCatchVisitor overCatchVisitor) {
@@ -147,11 +156,11 @@ public class ExceptionFinder {
 
 		for (MethodDeclaration declaration : throwMethods.keySet()) {
 			String type = throwMethods.get(declaration);
-//			SampleHandler.printMessage(
-//					String.format("The following method suffers from the Throw & Log anti-pattern: %s", type));
-//			if (declaration != null) {
-//				SampleHandler.printMessage(declaration.toString());
-//			}
+			SampleHandler.printMessage(
+					String.format("The following method suffers from the Throw & Log anti-pattern: %s", type));
+			if (declaration != null) {
+				SampleHandler.printMessage(declaration.toString());
+			}
 		}
 		for (MethodDeclaration declaration : catchMethods.keySet()) {
 			String type = catchMethods.get(declaration);
@@ -170,7 +179,7 @@ public class ExceptionFinder {
 //			}
 		}
 
-//		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
+		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
 //		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
 //		SampleHandler.printMessage(
 //				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
