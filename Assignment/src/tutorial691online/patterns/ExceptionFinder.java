@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
+import tutorial691online.visitors.CommentVisitor;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
 import tutorial691online.visitors.ThrowsClauseVisitor;
@@ -61,6 +62,14 @@ public class ExceptionFinder {
 				SampleHandler.printMessage("File(" + unit.getElementName() + 
 											"),# Try Blocks:" + tryBlockCount + 
 											",# Try-LOC:" + tryBlockLOC);
+				
+				//Exception Metrics: Try Size-SLOC
+				List comments = parsedCompilationUnit.getCommentList();
+				for (Comment comment : (List<Comment>) comments) {
+				    comment.accept(new CommentVisitor(parsedCompilationUnit, unit.getSource().split("\n")));
+				    SampleHandler.printMessage(comment.toString());
+				}
+				
 			}
 		}
 	}
