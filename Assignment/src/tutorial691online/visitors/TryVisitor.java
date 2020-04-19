@@ -1,5 +1,6 @@
 package tutorial691online.visitors;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,7 +13,8 @@ import tutorial691online.handlers.SampleHandler;
 public class TryVisitor extends ASTVisitor {
 	private static HashSet<TryStatement> tryStatements = new HashSet<>();
 	private static int tryBlockCount = 0;
-	private static int tryBlockLOC = 0;
+	private static int tryBlockSLOC = 0;
+	private static ArrayList<String> tryBlockSLOCStatements = new ArrayList<String>();
 	
 	@Override
 	public boolean visit(TryStatement node){
@@ -28,14 +30,19 @@ public class TryVisitor extends ASTVisitor {
 		List<Statement> bodyStatements = node.getBody().statements();
 		//SampleHandler.printMessage("nodeeeee:" + node);
 		for (Statement st : bodyStatements) {
-			//SampleHandler.printMessage("Satatementttttt:" + st.toString());
-			tryBlockLOC++;
+			tryBlockSLOCStatements.add(st.toString());
+			tryBlockSLOC++;
 		}
 
 		//SampleHandler.printMessage("Commentttttt:" + getCommentLineCount(bodyStatements));
 		
 		return super.visit(node);
 	}
+
+	public static ArrayList<String> getTryBlockSLOCStatements(){
+		return tryBlockSLOCStatements;
+	}
+	
 	public static HashSet<TryStatement> getTryStatements() {
 		return tryStatements;
 	}
@@ -44,8 +51,8 @@ public class TryVisitor extends ASTVisitor {
 		return tryBlockCount;
 	}
 	
-	public static int getTryBlockLOC() {
-		return tryBlockLOC;
+	public static int getTryBlockSLOC() {
+		return tryBlockSLOC;
 	}
 	
 }

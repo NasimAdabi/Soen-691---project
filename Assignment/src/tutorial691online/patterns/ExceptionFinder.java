@@ -1,5 +1,6 @@
 	package tutorial691online.patterns;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +26,8 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> catchMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
 	private static int tryBlockCount = 0;
-	private static int tryBlockLOC = 0;
+	private static int tryBlockSLOC = 0;
+	private static ArrayList<String> tryBlockSLOCStatements = new ArrayList<String>();
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
@@ -36,44 +38,50 @@ public class ExceptionFinder {
 				// AST node
 				CompilationUnit parsedCompilationUnit = parse(unit);
 
-				//Pattern 1: log & throw
-				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
-				parsedCompilationUnit.accept(exceptionVisitor);
-				// Give detail of detection
-				getMethodsWithTargetCatchClauses(exceptionVisitor);
-
-				// Pattern 3: overcatch
-				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
-				parsedCompilationUnit.accept(overCatchVisitor);
-				getMethodsWithTargetTryClauses(overCatchVisitor);
-
-				//Pattern 2 : Kitchen Sink
-				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
-				parsedCompilationUnit.accept(throwUncheckedException1);
-				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
-			
-				//Exception Metrics: Try Quantity & Try Size-LOC
+//				//Pattern 1: log & throw
+//				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
+//				parsedCompilationUnit.accept(exceptionVisitor);
+//				// Give detail of detection
+//				getMethodsWithTargetCatchClauses(exceptionVisitor);
+//
+//				// Pattern 3: overcatch
+//				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
+//				parsedCompilationUnit.accept(overCatchVisitor);
+//				getMethodsWithTargetTryClauses(overCatchVisitor);
+//
+//				//Pattern 2 : Kitchen Sink
+//				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
+//				parsedCompilationUnit.accept(throwUncheckedException1);
+//				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
+//				
+//				//Exception Metrics: Try Quantity & Try Size-LOC
 				TryVisitor tryVisitor = new TryVisitor();
 				parsedCompilationUnit.accept(tryVisitor);
 				tryBlockCount = tryVisitor.getTryBlockCount();
-				tryBlockLOC = tryVisitor.getTryBlockLOC();
-				
-				//CompilationUnitDeclaration d = unit.getElementName();
-				SampleHandler.printMessage("File(" + unit.getElementName() + 
-											"),# Try Blocks:" + tryBlockCount + 
-											",# Try-LOC:" + tryBlockLOC);
+				tryBlockSLOC = tryVisitor.getTryBlockSLOC();
+				tryBlockSLOCStatements = tryVisitor.getTryBlockSLOCStatements();
 				
 				//Exception Metrics: Try Size-SLOC
 				List comments = parsedCompilationUnit.getCommentList();
 				for (Comment comment : (List<Comment>) comments) {
 				    comment.accept(new CommentVisitor(parsedCompilationUnit, unit.getSource().split("\n")));
-				    SampleHandler.printMessage(comment.toString());
+				    //SampleHandler.printMessage("11111111:" + CommentVisitor.);
 				}
-				
+				//CompilationUnitDeclaration d = unit.getElementName();
+				SampleHandler.printMessage("File(" + unit.getElementName() + 
+											"),# Try Blocks:" + tryBlockCount + 
+											",# Try-SLOC:" + tryBlockSLOC);
+				SampleHandler.printMessage("Satatementttttt:" + tryBlockSLOCStatements);
 			}
 		}
 	}
 
+//	private void getComments(CommentVisitor commentVisitor) {
+//		for (MethodInvocation methodInvocationStatement : CommentVisitor.getmethodInvocationStatements()) {
+//			kitchenSinkMethods.put(findMethodForThrow1(methodInvocationStatement), "Throwing the Kitchen Sink");
+//		}
+//	}
+	
 	private void getMethodsWithTargetThrow1Clauses(Throw1ClauseVisitor throwUncheckedException) {
 		// TODO Auto-generated method stub
 		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
@@ -139,33 +147,33 @@ public class ExceptionFinder {
 
 		for (MethodDeclaration declaration : throwMethods.keySet()) {
 			String type = throwMethods.get(declaration);
-			SampleHandler.printMessage(
-					String.format("The following method suffers from the Throw & Log anti-pattern: %s", type));
-			if (declaration != null) {
-				SampleHandler.printMessage(declaration.toString());
-			}
+//			SampleHandler.printMessage(
+//					String.format("The following method suffers from the Throw & Log anti-pattern: %s", type));
+//			if (declaration != null) {
+//				SampleHandler.printMessage(declaration.toString());
+//			}
 		}
 		for (MethodDeclaration declaration : catchMethods.keySet()) {
 			String type = catchMethods.get(declaration);
-			SampleHandler.printMessage(
-					String.format("The following method suffers from the Over-Catch anti-pattern: %s", type));
-			if (declaration != null) {
-				SampleHandler.printMessage(declaration.toString());
-			}
+//			SampleHandler.printMessage(
+//					String.format("The following method suffers from the Over-Catch anti-pattern: %s", type));
+//			if (declaration != null) {
+//				SampleHandler.printMessage(declaration.toString());
+//			}
 		}
 
 		for (MethodDeclaration declaration : kitchenSinkMethods.keySet()) {
-			String type = kitchenSinkMethods.get(declaration);
-			SampleHandler.printMessage(String.format("The following method suffers from the %s anti-pattern", type));
-			if (declaration != null) {
-				SampleHandler.printMessage(declaration.toString());
-			}
+//			String type = kitchenSinkMethods.get(declaration);
+//			SampleHandler.printMessage(String.format("The following method suffers from the %s anti-pattern", type));
+//			if (declaration != null) {
+//				SampleHandler.printMessage(declaration.toString());
+//			}
 		}
 
-		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
-		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
-		SampleHandler.printMessage(
-				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
+//		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
+//		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
+//		SampleHandler.printMessage(
+//				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {

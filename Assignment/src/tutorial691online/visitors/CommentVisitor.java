@@ -29,6 +29,8 @@ public class CommentVisitor extends ASTVisitor  {
         String lineComment = source[startLineNumber].trim();
         
         lineComments.add(lineComment);
+        
+        //SampleHandler.printMessage("2222222:" + lineComments.toString());
         return super.visit(node);
     }
 
@@ -46,8 +48,9 @@ public class CommentVisitor extends ASTVisitor  {
                 blockComment.append("\n");
             }
         }
-
         blockComments.add(blockComment.toString());
+        
+        //SampleHandler.printMessage("333333:" + blockComments.toString());
         return super.visit(node);
     }
 
