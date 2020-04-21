@@ -13,21 +13,21 @@ import tutorial691online.handlers.SampleHandler;
 
 public class TryVisitor extends ASTVisitor {
 	private static HashSet<TryStatement> tryStatements = new HashSet<>();
-	private static int tryBlockCount = 0;
-	private static int tryBlockLOC = 0;
-	private static ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
+	private int tryBlockCount = 0;
+	private int tryBlockLOC = 0;
+	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
 	
-	@Override
-	public boolean visit(ContinueStatement node){
-		SampleHandler.printMessage("BLOCKKKK:" + node);
-		
-		return super.visit(node);
-	}
-	
+//	@Override
+//	public boolean visit(ContinueStatement node){
+//		SampleHandler.printMessage("BLOCKKKK:" + node);
+//		
+//		return super.visit(node);
+//	}
+//	
 	@Override
 	public boolean visit(TryStatement node){
+		tryStatements.add(node);
 		tryBlockCount++;
-		
 		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("TryBlock");
 		node.accept(methodInvocationVisitor);
 		
@@ -43,15 +43,19 @@ public class TryVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
-	public static ArrayList<String> getTryBlockLOCStatements(){
+	public static HashSet<TryStatement> getTryBlocks(){
+		return tryStatements;
+	}
+	
+	public ArrayList<String> getTryBlockLOCStatements(){
 		return tryBlockLOCStatements;
 	}
 	
-	public static int getTryBlockCount() {
+	public int getTryBlockCount() {
 		return tryBlockCount;
 	}
 	
-	public static int getTryBlockSLOC() {
+	public int getTryBlockSLOC() {
 		return tryBlockLOC;
 	}
 	

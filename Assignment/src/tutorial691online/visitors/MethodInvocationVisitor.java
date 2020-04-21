@@ -1,13 +1,9 @@
 package tutorial691online.visitors;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Expression;
@@ -16,8 +12,6 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-
-import tutorial691online.handlers.SampleHandler;
 
 public class MethodInvocationVisitor extends ASTVisitor{
 	
@@ -36,7 +30,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	private String exceptionTypeName;
 	private MethodInvocation currentNode;
 	private MethodInvocation invokedMethodNode;
-	private static Map<String, String> flowHandlingActionStatements = new HashMap<String, String>();
+	private static ArrayList<String> flowHandlingActionStatements = new ArrayList<String>();
 	
 	public MethodInvocationVisitor(String statement) {
 		this.statementAccordingToVisitorType = statement;
@@ -113,7 +107,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 				//SampleHandler.printMessage("Object Name:" + n.resolveBinding().getName() + ", Method name:" + node.getName().getFullyQualifiedName());
 				//SampleHandler.printMessage("type:" + name.resolveBinding());
 				if(!type.contains("java.util.logging.Logger")) {
-					flowHandlingActionStatements.put(binding.getName(), "Method Call");
+					flowHandlingActionStatements.add(binding.getName() + ", Action:'Method Call'");
 				}
 			} 
 
@@ -216,7 +210,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
         return false;
     }
 
-	public Map<String, String> getFlowHandlingActions() {
+	public ArrayList<String> getFlowHandlingActions() {
 		return flowHandlingActionStatements;
 	}
 	

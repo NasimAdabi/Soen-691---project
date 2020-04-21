@@ -29,6 +29,8 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> throwMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> catchMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
+	HashMap<TryStatement, String> tryBlocks = new HashMap<>();
+	
 	private static int tryBlockCount = 0;
 	private static int tryBlockLOC = 0;
 	private static ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
@@ -38,7 +40,6 @@ public class ExceptionFinder {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
 
 		for (IPackageFragment mypackage : packages) {
-
 			for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 				// AST node
 				CompilationUnit parsedCompilationUnit = parse(unit);
@@ -50,9 +51,9 @@ public class ExceptionFinder {
 //				getMethodsWithTargetCatchClauses(exceptionVisitor);
 //				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
 
-				for (Map.Entry<String, String> actionStatement : exceptionVisitor.getActionStatements().entrySet()) {
-					SampleHandler.printMessage("Actions Statement: " + actionStatement.getKey() + ", Action:" + actionStatement.getValue());
-				}
+//				for (String actionStatement : exceptionVisitor.getActionStatements()) {
+//					SampleHandler.printMessage("Actions Statement: " + actionStatement);
+//				}
 				
 //				// Pattern 3: overcatch
 //				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
@@ -67,6 +68,8 @@ public class ExceptionFinder {
 //				//Exception Metrics: Try Quantity & Try Size-LOC
 				TryVisitor tryVisitor = new TryVisitor();
 				parsedCompilationUnit.accept(tryVisitor);
+				//getMethodsWithTryBlock(tryVisitor);
+
 				tryBlockCount = tryVisitor.getTryBlockCount();
 				tryBlockLOC = tryVisitor.getTryBlockSLOC();
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
@@ -81,7 +84,7 @@ public class ExceptionFinder {
 				SampleHandler.printMessage("File(" + unit.getElementName() + 
 											"),# Try Blocks:" + tryBlockCount + 
 											",# Try-LOC:" + tryBlockLOC);
-//				SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 			}
 		}
 	}
@@ -113,6 +116,13 @@ public class ExceptionFinder {
 		}
 	}
 
+	private void getMethodsWithTryBlock(TryVisitor tryVisitor) {
+		for (TryStatement tryStatement : tryVisitor.getTryBlocks()) {
+			// suspectMethods.put(findMethodForCatch(catchblock), "Over-Catch");
+			tryBlocks.put(findMethodForCatch(tryStatement), "Try Block");
+		}
+	}
+	
 	private ASTNode findParentMethodDeclaration(ASTNode node) {
 		if (node != null && node.getParent() != null) {
 			if (node.getParent().getNodeType() == ASTNode.METHOD_DECLARATION) {
@@ -124,6 +134,21 @@ public class ExceptionFinder {
 		return null;
 	}
 
+	private ASTNode findParentTryBlock(ASTNode node) {
+		if (node != null && node.getParent() != null) {
+			if (node.getParent().getNodeType() == ASTNode.METHOD_DECLARATION) {
+				return node.getParent();
+			} else {
+				return findParentMethodDeclaration(node.getParent());
+			}
+		}
+		return null;
+	}
+	
+	private TryStatement findMethodForCatch(TryStatement tryStatement) {
+		return (TryStatement) findParentTryBlock(tryStatement);
+	}
+	
 	private MethodDeclaration findMethodForThrow(CatchClause throwStatement) {
 		return (MethodDeclaration) findParentMethodDeclaration(throwStatement);
 	}
@@ -178,7 +203,15 @@ public class ExceptionFinder {
 //				SampleHandler.printMessage(declaration.toString());
 //			}
 		}
-
+		
+		for (TryStatement tryBlock : tryBlocks.keySet()) {
+			String type = tryBlocks.get(tryBlock);
+			SampleHandler.printMessage(String.format("The following method is: ", type));
+			if (tryBlock != null) {
+				SampleHandler.printMessage(tryBlock.toString());
+			}
+		}
+		
 		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
 //		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
 //		SampleHandler.printMessage(

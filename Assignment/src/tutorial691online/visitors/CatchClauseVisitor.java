@@ -24,14 +24,14 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private String exceptionName;
 	private ITypeBinding exceptionType;
 	private String exceptionTypeName;
-	private Map<String, String> flowHandlingStatements = new HashMap<String, String>();
+	private ArrayList<String> flowHandlingStatements = new ArrayList<String>();
 	
 	@Override
 	public boolean visit(CatchClause node) {
 		
 		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("LogCatchSwitch");
 		node.accept(methodInvocationVisitor);
-		flowHandlingStatements.putAll(methodInvocationVisitor.getFlowHandlingActions());
+		flowHandlingStatements.addAll(methodInvocationVisitor.getFlowHandlingActions());
 		
 		
 		if(isfirstPatternException(node)) {
@@ -84,7 +84,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 				throwCounter++;
 			}
 			if(statement.toString().contains("log")) {
-				flowHandlingStatements.put(statement.toString(), "Log");
+				flowHandlingStatements.add(statement.toString() + ", Action:'Log'");
 				logCounter++;
 			}
 			if(throwCounter>0 && logCounter>0) {
@@ -100,7 +100,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 		return throwStatements;
 	}
 	
-	public Map<String, String> getActionStatements() {
+	public ArrayList<String> getActionStatements() {
 		return flowHandlingStatements;
 	}
 }
