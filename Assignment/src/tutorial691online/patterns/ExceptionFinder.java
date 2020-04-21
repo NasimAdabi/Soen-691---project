@@ -82,9 +82,7 @@ public class ExceptionFinder {
 //				    //SampleHandler.printMessage("11111111:" + CommentVisitor.);
 //				}
 				//CompilationUnitDeclaration d = unit.getElementName();
-				SampleHandler.printMessage("File(" + unit.getElementName() + 
-											"),# Try Blocks:" + tryBlockCount + 
-											",# Try-LOC:" + tryBlockLOC);
+				SampleHandler.printMessage("# Try Blocks:" + tryBlockCount + ",# Try-LOC:" + tryBlockLOC);
 //				SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 			}
 		}
