@@ -34,7 +34,7 @@ public class ExceptionFinder {
 	private static int tryBlockCount = 0;
 	private static int tryBlockLOC = 0;
 	private static ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
-	private static int flowHandlingActionsCount = 0;
+	private int flowHandlingActionsCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
@@ -48,12 +48,12 @@ public class ExceptionFinder {
 				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
 				parsedCompilationUnit.accept(exceptionVisitor);
 				// Give detail of detection
-//				getMethodsWithTargetCatchClauses(exceptionVisitor);
-//				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
-
-//				for (String actionStatement : exceptionVisitor.getActionStatements()) {
-//					SampleHandler.printMessage("Actions Statement: " + actionStatement);
-//				}
+//              getMethodsWithTargetCatchClauses(exceptionVisitor);
+				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
+				SampleHandler.printMessage("File name: " + unit.getElementName());
+				for (String actionStatement : exceptionVisitor.getActionStatements()) {
+					SampleHandler.printMessage("Actions Statement: " + actionStatement);
+				}
 				
 //				// Pattern 3: overcatch
 //				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
@@ -66,13 +66,13 @@ public class ExceptionFinder {
 //				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
 //				
 //				//Exception Metrics: Try Quantity & Try Size-LOC
-				TryVisitor tryVisitor = new TryVisitor();
-				parsedCompilationUnit.accept(tryVisitor);
-				//getMethodsWithTryBlock(tryVisitor);
-
-				tryBlockCount = tryVisitor.getTryBlockCount();
-				tryBlockLOC = tryVisitor.getTryBlockSLOC();
-				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
+//				TryVisitor tryVisitor = new TryVisitor();
+//				parsedCompilationUnit.accept(tryVisitor);
+//				//getMethodsWithTryBlock(tryVisitor);
+//
+//				tryBlockCount = tryVisitor.getTryBlockCount();
+//				tryBlockLOC = tryVisitor.getTryBlockSLOC();
+//				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
 				//Exception Metrics: Try Size-SLOC
 				List comments = parsedCompilationUnit.getCommentList();
@@ -81,10 +81,10 @@ public class ExceptionFinder {
 				    //SampleHandler.printMessage("11111111:" + CommentVisitor.);
 				}
 				//CompilationUnitDeclaration d = unit.getElementName();
-				SampleHandler.printMessage("File(" + unit.getElementName() + 
-											"),# Try Blocks:" + tryBlockCount + 
-											",# Try-LOC:" + tryBlockLOC);
-				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+//				SampleHandler.printMessage("File(" + unit.getElementName() + 
+//											"),# Try Blocks:" + tryBlockCount + 
+//											",# Try-LOC:" + tryBlockLOC);
+//				SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 			}
 		}
 	}

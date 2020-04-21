@@ -13,6 +13,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import tutorial691online.handlers.SampleHandler;
+
 public class MethodInvocationVisitor extends ASTVisitor{
 	
 	private static String[] LogMethods = {"log", "info", "warn", "error", "trace", "debug", "fatal"}; // "log statement"
@@ -30,7 +32,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	private String exceptionTypeName;
 	private MethodInvocation currentNode;
 	private MethodInvocation invokedMethodNode;
-	private static ArrayList<String> flowHandlingActionStatements = new ArrayList<String>();
+	private ArrayList<String> flowHandlingActionStatements = new ArrayList<String>();
 	
 	public MethodInvocationVisitor(String statement) {
 		this.statementAccordingToVisitorType = statement;
@@ -99,7 +101,6 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		if(methodNode != null) {
 			IMethodBinding binding = methodNode.getMethodDeclaration();
 			
-
 			Expression e = node.getExpression(); 
 			if(e instanceof Name) {
 				Name name = (Name) e;
@@ -109,7 +110,9 @@ public class MethodInvocationVisitor extends ASTVisitor{
 				if(!type.contains("java.util.logging.Logger")) {
 					flowHandlingActionStatements.add(binding.getName() + ", Action:'Method Call'");
 				}
-			} 
+			}else {
+				flowHandlingActionStatements.add(binding.getName() + ", Action:'Method Call'");
+			}
 
 			//if(binding != null) {
 				//SampleHandler.printMessage("Type: "+ type.toString()+ ",method: " + methodName + ",calls:" + type.getFullyQualifiedName());	
