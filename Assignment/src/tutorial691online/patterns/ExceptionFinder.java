@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitor;
+import tutorial691online.visitors.CommentVisitorForTry;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
 import tutorial691online.visitors.ThrowsClauseVisitor;
@@ -33,12 +34,12 @@ public class ExceptionFinder {
 	
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
+	private int tryBlockSLOC = 0;
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
 	private int flowHandlingActionsCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
-
 		for (IPackageFragment mypackage : packages) {
 			for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 				// AST node
@@ -52,9 +53,9 @@ public class ExceptionFinder {
 				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
 				SampleHandler.printMessage("File name: " + unit.getElementName());
 				SampleHandler.printMessage("Flow Handling Actions Count: " + exceptionVisitor.getActionStatements().size());
-//				for (String actionStatement : exceptionVisitor.getActionStatements()) {
-//					SampleHandler.printMessage("Actions Statement: " + actionStatement);
-//				}
+				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
+					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
+				//}
 				
 				// Pattern 3: overcatch
 				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
@@ -75,25 +76,23 @@ public class ExceptionFinder {
 				tryBlockLOC = tryVisitor.getTryBlockSLOC();
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
-//				//Exception Metrics: Try Size-SLOC
-//				List comments = parsedCompilationUnit.getCommentList();
-//				for (Comment comment : (List<Comment>) comments) {
-//				    comment.accept(new CommentVisitor(parsedCompilationUnit, unit.getSource().split("\n")));
-//				    //SampleHandler.printMessage("11111111:" + CommentVisitor.);
-//				}
+				//Exception Metrics: Try Size-SLOC
+				CommentVisitorForTry CommentVisitorForTry = new CommentVisitorForTry();
+				CommentVisitorForTry.setTree(parsedCompilationUnit);
+				parsedCompilationUnit.accept(CommentVisitorForTry);
+				
+				for (Comment comment : (List<Comment>) parsedCompilationUnit.getCommentList()) {
+					 comment.accept(CommentVisitorForTry);
+				 }
+				tryBlockSLOC = CommentVisitorForTry.getCommentInTryCount();
+				
 				//CompilationUnitDeclaration d = unit.getElementName();
-				SampleHandler.printMessage("# Try Blocks:" + tryBlockCount + ",# Try-LOC:" + tryBlockLOC);
-//				SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+				SampleHandler.printMessage("Try Blocks:" + tryBlockCount + ",Try-LOC:" + tryBlockLOC + ",Try-SLOC:" + tryBlockSLOC);
+				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 			}
 		}
 	}
 
-//	private void getComments(CommentVisitor commentVisitor) {
-//		for (MethodInvocation methodInvocationStatement : CommentVisitor.getmethodInvocationStatements()) {
-//			kitchenSinkMethods.put(findMethodForThrow1(methodInvocationStatement), "Throwing the Kitchen Sink");
-//		}
-//	}
-	
 	private void getMethodsWithTargetThrow1Clauses(Throw1ClauseVisitor throwUncheckedException) {
 		// TODO Auto-generated method stub
 		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
