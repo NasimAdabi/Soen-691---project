@@ -46,13 +46,13 @@ public class ExceptionFinder {
 				CompilationUnit parsedCompilationUnit = parse(unit);
 
 				//Pattern 1: log & throw
+				// AND Exception Metrics: Flow Handling Actions
 				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
 				parsedCompilationUnit.accept(exceptionVisitor);
 				// Give detail of detection
                 getMethodsWithTargetCatchClauses(exceptionVisitor);
 				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
-				SampleHandler.printMessage("File name: " + unit.getElementName());
-				SampleHandler.printMessage("Flow Handling Actions Count: " + exceptionVisitor.getActionStatements().size());
+				
 				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
 					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
 				//}
@@ -71,7 +71,6 @@ public class ExceptionFinder {
 				TryVisitor tryVisitor = new TryVisitor();
 				parsedCompilationUnit.accept(tryVisitor);
 				//getMethodsWithTryBlock(tryVisitor);
-
 				tryBlockCount = tryVisitor.getTryBlockCount();
 				tryBlockLOC = tryVisitor.getTryBlockSLOC();
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
@@ -85,10 +84,9 @@ public class ExceptionFinder {
 					 comment.accept(CommentVisitorForTry);
 				 }
 				tryBlockSLOC = CommentVisitorForTry.getCommentInTryCount();
-				
-				//CompilationUnitDeclaration d = unit.getElementName();
-				SampleHandler.printMessage("Try Blocks:" + tryBlockCount + ",Try-LOC:" + tryBlockLOC + ",Try-SLOC:" + tryBlockSLOC);
 				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+				
+				printCharacteristicsMetrics(unit.getElementName());
 			}
 		}
 	}
@@ -113,13 +111,6 @@ public class ExceptionFinder {
 			catchMethods.put(findMethodForCatch(catchblock), "Over-Catch");
 		}
 	}
-
-	private void getMethodsWithTryBlock(TryVisitor tryVisitor) {
-		for (TryStatement tryStatement : tryVisitor.getTryBlocks()) {
-			// suspectMethods.put(findMethodForCatch(catchblock), "Over-Catch");
-			tryBlocks.put(findMethodForCatch(tryStatement), "Try Block");
-		}
-	}
 	
 	private ASTNode findParentMethodDeclaration(ASTNode node) {
 		if (node != null && node.getParent() != null) {
@@ -141,10 +132,6 @@ public class ExceptionFinder {
 			}
 		}
 		return null;
-	}
-	
-	private TryStatement findMethodForCatch(TryStatement tryStatement) {
-		return (TryStatement) findParentTryBlock(tryStatement);
 	}
 	
 	private MethodDeclaration findMethodForThrow(CatchClause throwStatement) {
@@ -214,6 +201,16 @@ public class ExceptionFinder {
 		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
 		SampleHandler.printMessage(
 				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
+	
+	}
+	
+	public void printCharacteristicsMetrics(String fileName){
+		SampleHandler.printMessage("File name: " + fileName);
+		SampleHandler.printMessage("Flow Handling Actions Count: " + flowHandlingActionsCount);
+		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
+		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
+		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
+		
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {

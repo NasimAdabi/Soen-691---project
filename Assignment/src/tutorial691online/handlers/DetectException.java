@@ -27,7 +27,7 @@ public class DetectException extends AbstractHandler {
 			try {
 				// find the exceptions and print the methods that contain the exceptions
 				exceptionFinder.findExceptions(project);
-				exceptionFinder.printExceptions();		
+				exceptionFinder.printExceptions();			
 				
 			} catch (JavaModelException e) {
 				e.printStackTrace();
