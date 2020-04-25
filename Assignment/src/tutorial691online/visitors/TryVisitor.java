@@ -55,7 +55,7 @@ public class TryVisitor extends ASTVisitor {
 		return tryBlockCount;
 	}
 	
-	public int getTryBlockSLOC() {
+	public int getTryBlockLOC() {
 		return tryBlockLOC;
 	}
 	

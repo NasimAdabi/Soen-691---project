@@ -28,7 +28,9 @@ public class ExceptionFinder {
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
 	private int catchBlockSLOC = 0;
+	private int catchBlockLOC = 0;
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
+	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
 	private int flowHandlingActionsCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
@@ -40,11 +42,13 @@ public class ExceptionFinder {
 
 				//Pattern 1: log & throw
 				// AND Exception Metrics: Flow Handling Actions
-				CatchClauseVisitor exceptionVisitor = new CatchClauseVisitor();
-				parsedCompilationUnit.accept(exceptionVisitor);
+				CatchClauseVisitor catchVisitor = new CatchClauseVisitor();
+				parsedCompilationUnit.accept(catchVisitor);
 				// Give detail of detection
-                getMethodsWithTargetCatchClauses(exceptionVisitor);
-				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
+                getMethodsWithTargetCatchClauses(catchVisitor);
+				flowHandlingActionsCount = catchVisitor.getActionStatements().size();
+				catchBlockLOC = catchVisitor.getTryBlockLOC();
+				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
 				
 				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
 					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
@@ -65,7 +69,7 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(tryVisitor);
 				//getMethodsWithTryBlock(tryVisitor);
 				tryBlockCount = tryVisitor.getTryBlockCount();
-				tryBlockLOC = tryVisitor.getTryBlockSLOC();
+				tryBlockLOC = tryVisitor.getTryBlockLOC();
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
 				//Exception Metrics: Try Size-SLOC & Catch Size-SLOC
@@ -79,10 +83,7 @@ public class ExceptionFinder {
 				tryBlockSLOC = CommentVisitor.getCommentInTryCount();
 				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
-				
-				
-				
-				
+				//SampleHandler.printMessage("Satatementttttt:" + catchBlockLOCStatements);
 				
 				printCharacteristicsMetrics(unit.getElementName());
 			}
@@ -208,6 +209,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
 		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
 		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
+		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
 		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
 	}
 

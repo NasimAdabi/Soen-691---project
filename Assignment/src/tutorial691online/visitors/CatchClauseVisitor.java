@@ -25,6 +25,8 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private ITypeBinding exceptionType;
 	private String exceptionTypeName;
 	private ArrayList<String> flowHandlingStatements = new ArrayList<String>();
+	private int catchBlockLOC = 0;
+	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
 	
 	@Override
 	public boolean visit(CatchClause node) {
@@ -38,40 +40,15 @@ public class CatchClauseVisitor extends ASTVisitor{
 			throwStatements.add(node);
 		}
 		
+		List<Statement> bodyStatements = node.getBody().statements();
+		//SampleHandler.printMessage("nodeeeee:" + node);
+		for (Statement st : bodyStatements) {
+			catchBlockLOCStatements.add(st.toString());
+			catchBlockLOC++;
+		}
+		
 		return super.visit(node);
 	}
-
-//	public void getLogActionCount(CatchClause node) {
-//		
-//		List<Statement> blockStatements = node.getBody().statements();
-//		
-//		for(Statement statement : blockStatements) {
-//			if(statement.toString().contains("log")) {
-//				//SampleHandler.printMessage("log.error:"+statement);
-//				logActionCount++;
-//			}
-//			else {
-//				IMethodBinding methodNode = node.resolveMethodBinding();
-//				if(methodNode != null) {
-//					ITypeBinding[] exceptionBinding = methodNode.getExceptionTypes();
-//					for(ITypeBinding exception : exceptionBinding) {
-//						String exceptionName = exception.getQualifiedName();
-//						this.exceptionName = exceptionName;
-//						//SampleHandler.printMessage("Throws exception::::::" + exceptionName);
-//						
-//						ITypeBinding exceptionType = exception.getTypeDeclaration();
-//						this.exceptionTypeName = exceptionType.getQualifiedName();
-//						this.exceptionType = exceptionType;
-//						//SampleHandler.printMessage("Invoked Typeeeeeeeee::::::" + this.exceptionType.toString());
-//						//SampleHandler.printMessage("testtttttttttttttttttttttttttttttt" + methodNode);
-//					}
-//				}
-//				
-//				methodCallActionCount++;
-//			}
-//		}
-//		
-//	}
 	
 	private boolean isfirstPatternException(CatchClause node) {
 		int throwCounter = 0;
@@ -102,5 +79,13 @@ public class CatchClauseVisitor extends ASTVisitor{
 	
 	public ArrayList<String> getActionStatements() {
 		return flowHandlingStatements;
+	}
+	
+	public ArrayList<String> getCatchBlockLOCStatements(){
+		return catchBlockLOCStatements;
+	}
+	
+	public int getTryBlockLOC() {
+		return catchBlockLOC;
 	}
 }
