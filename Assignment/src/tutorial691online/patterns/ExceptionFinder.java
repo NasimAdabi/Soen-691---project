@@ -27,6 +27,7 @@ public class ExceptionFinder {
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
+	private int catchBlockCount = 0;
 	private int catchBlockSLOC = 0;
 	private int catchBlockLOC = 0;
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
@@ -47,6 +48,7 @@ public class ExceptionFinder {
 				// Give detail of detection
                 getMethodsWithTargetCatchClauses(catchVisitor);
 				flowHandlingActionsCount = catchVisitor.getActionStatements().size();
+				catchBlockCount = catchVisitor.getCatchBlockCount();
 				catchBlockLOC = catchVisitor.getTryBlockLOC();
 				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
 				
@@ -209,6 +211,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
 		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
 		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
+		SampleHandler.printMessage("Catch Block Count:" + catchBlockCount);
 		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
 		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
 	}

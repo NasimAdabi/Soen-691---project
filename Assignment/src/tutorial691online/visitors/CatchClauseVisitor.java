@@ -13,11 +13,13 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 
 import tutorial691online.handlers.SampleHandler;
 
 public class CatchClauseVisitor extends ASTVisitor{
-
+	private static HashSet<CatchClause> catchClauses = new HashSet<>();
+	private int catchBlockCount = 0;
 	private HashSet<CatchClause> throwStatements = new HashSet<>();
 	private int logActionCount = 0;
 	private int methodCallActionCount = 0;
@@ -30,6 +32,8 @@ public class CatchClauseVisitor extends ASTVisitor{
 	
 	@Override
 	public boolean visit(CatchClause node) {
+		catchClauses.add(node);
+		catchBlockCount++;
 		
 		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("LogCatchSwitch");
 		node.accept(methodInvocationVisitor);
@@ -73,6 +77,14 @@ public class CatchClauseVisitor extends ASTVisitor{
 		return false;
 	}
 
+	public static HashSet<CatchClause> getCatchBlocks(){
+		return catchClauses;
+	}
+	
+	public int getCatchBlockCount() {
+		return catchBlockCount;
+	}
+	
 	public HashSet<CatchClause> getThrowStatements() {
 		return throwStatements;
 	}
