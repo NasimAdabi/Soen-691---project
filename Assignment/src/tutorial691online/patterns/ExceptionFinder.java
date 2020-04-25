@@ -52,7 +52,6 @@ public class ExceptionFinder {
 				// Give detail of detection
                 getMethodsWithTargetCatchClauses(exceptionVisitor);
 				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
-				
 				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
 					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
 				//}
@@ -85,6 +84,7 @@ public class ExceptionFinder {
 				 }
 				tryBlockSLOC = CommentVisitorForTry.getCommentInTryCount();
 				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+				
 				
 				printCharacteristicsMetrics(unit.getElementName());
 			}

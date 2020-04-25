@@ -30,12 +30,12 @@ public class CommentVisitorForTry extends ASTVisitor{
 	
 	@Override
 	public boolean visit(TryStatement node){
-		int tryStartPosition = tree.getLineNumber(node.getStartPosition());
-		int tryEndPosition = tree.getLineNumber(node.getStartPosition()+node.getLength());
+		int tryStartPosition = tree.getLineNumber(node.getBody().getStartPosition());
+		int tryEndPosition = tree.getLineNumber(node.getBody().getStartPosition()+node.getBody().getLength());
 		//SampleHandler.printMessage("Visiting 'TryStatement' start line " + tryStartPosition + " end line " + tryEndPosition);
 		
 		tryScope.put(tryStartPosition, tryEndPosition);
-		tryBlock.add(node.toString());
+		tryBlock.add(node.getBody().toString());
 		return super.visit(node);
 	}
 	
