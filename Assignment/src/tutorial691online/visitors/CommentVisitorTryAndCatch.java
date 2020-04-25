@@ -20,7 +20,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 import tutorial691online.handlers.SampleHandler;
 
 public class CommentVisitorTryAndCatch extends ASTVisitor{
-	private static final Logger logger = LogManager.getLogger(CommentVisitorForTry.class.getName());
+	private static final Logger logger = LogManager.getLogger(CommentVisitorTryAndCatch.class.getName());
 	private CompilationUnit tree;
 	List<String> lineComments = new ArrayList<String>();
 	List<String> blockComments = new ArrayList<String>();
