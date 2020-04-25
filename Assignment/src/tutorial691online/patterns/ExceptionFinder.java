@@ -1,29 +1,21 @@
-	package tutorial691online.patterns;
+package tutorial691online.patterns;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.JavaModelException;
 
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
-import tutorial691online.visitors.CommentVisitor;
-import tutorial691online.visitors.CommentVisitorForTry;
+import tutorial691online.visitors.CommentVisitorTryAndCatch;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
-import tutorial691online.visitors.ThrowsClauseVisitor;
 import tutorial691online.visitors.TryVisitor;
 
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 
 public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> suspectMethods = new HashMap<>();
@@ -35,6 +27,7 @@ public class ExceptionFinder {
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
+	private int catchBlockSLOC = 0;
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
 	private int flowHandlingActionsCount = 0;
 
@@ -52,6 +45,7 @@ public class ExceptionFinder {
 				// Give detail of detection
                 getMethodsWithTargetCatchClauses(exceptionVisitor);
 				flowHandlingActionsCount = exceptionVisitor.getActionStatements().size();
+				
 				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
 					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
 				//}
@@ -74,16 +68,20 @@ public class ExceptionFinder {
 				tryBlockLOC = tryVisitor.getTryBlockSLOC();
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
-				//Exception Metrics: Try Size-SLOC
-				CommentVisitorForTry CommentVisitorForTry = new CommentVisitorForTry();
-				CommentVisitorForTry.setTree(parsedCompilationUnit);
-				parsedCompilationUnit.accept(CommentVisitorForTry);
+				//Exception Metrics: Try Size-SLOC & Catch Size-SLOC
+				CommentVisitorTryAndCatch CommentVisitor = new CommentVisitorTryAndCatch();
+				CommentVisitor.setTree(parsedCompilationUnit);
+				parsedCompilationUnit.accept(CommentVisitor);
 				
 				for (Comment comment : (List<Comment>) parsedCompilationUnit.getCommentList()) {
-					 comment.accept(CommentVisitorForTry);
+					 comment.accept(CommentVisitor);
 				 }
-				tryBlockSLOC = CommentVisitorForTry.getCommentInTryCount();
+				tryBlockSLOC = CommentVisitor.getCommentInTryCount();
 				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
+				
+				
+				
 				
 				
 				printCharacteristicsMetrics(unit.getElementName());
@@ -210,7 +208,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
 		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
 		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
-		
+		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {
