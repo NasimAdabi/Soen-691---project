@@ -100,6 +100,11 @@ public class ExceptionFinder {
 	}
 
 	private void getMethodsWithTargetCatchClauses(CatchClauseVisitor catchClauseVisitor) {
+		
+		for(CatchClause emptyCatch: catchClauseVisitor.getEmptyCatches()) {
+			suspectMethods.put(findMethodForCatch(emptyCatch), "EmptyCatch");
+		}
+		
 		for (CatchClause throwStatement : catchClauseVisitor.getThrowStatements()) {
 			// suspectMethods.put(findMethodForThrow(throwStatement), "throwStatement");
 			throwMethods.put(findMethodForThrow(throwStatement), "LogThrow");
@@ -165,30 +170,31 @@ public class ExceptionFinder {
 
 	public void printExceptions() {
 
-		for (MethodDeclaration declaration : throwMethods.keySet()) {
-			String type = throwMethods.get(declaration);
+//		for (MethodDeclaration declaration : throwMethods.keySet()) {
+//			String type = throwMethods.get(declaration);
 //			SampleHandler.printMessage(
 //					String.format("The following method suffers from the Throw & Log anti-pattern: %s", type));
 //			if (declaration != null) {
 //				SampleHandler.printMessage(declaration.toString());
 //			}
-		}
-		for (MethodDeclaration declaration : catchMethods.keySet()) {
-			String type = catchMethods.get(declaration);
+//		}
+		
+//		for (MethodDeclaration declaration : catchMethods.keySet()) {
+//			String type = catchMethods.get(declaration);
 //			SampleHandler.printMessage(
 //					String.format("The following method suffers from the Over-Catch anti-pattern: %s", type));
 //			if (declaration != null) {
 //				SampleHandler.printMessage(declaration.toString());
 //			}
-		}
+//		}
 
-		for (MethodDeclaration declaration : kitchenSinkMethods.keySet()) {
+//		for (MethodDeclaration declaration : kitchenSinkMethods.keySet()) {
 //			String type = kitchenSinkMethods.get(declaration);
 //			SampleHandler.printMessage(String.format("The following method suffers from the %s anti-pattern", type));
 //			if (declaration != null) {
 //				SampleHandler.printMessage(declaration.toString());
 //			}
-		}
+//		}
 		
 		for (TryStatement tryBlock : tryBlocks.keySet()) {
 			String type = tryBlocks.get(tryBlock);
@@ -198,10 +204,17 @@ public class ExceptionFinder {
 			}
 		}
 		
+//		for(MethodDeclaration declaration : suspectMethods.keySet()) {
+//			String type = suspectMethods.get(declaration);
+//			SampleHandler.printMessage(String.format("The following method suffers from the %s pattern", type));
+//			SampleHandler.printMessage(declaration.toString());
+//		}
+		
 		SampleHandler.printMessage(String.format("Throw & Log anti-pattern Detected Count: %s", throwMethods.size()));
 		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
 		SampleHandler.printMessage(
 				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
+		SampleHandler.printMessage(String.format("Catch and Do Nothing(Empty Catch) anti-pattern Detected Count: %s", suspectMethods.size()));
 	
 	}
 	

@@ -29,6 +29,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private ArrayList<String> flowHandlingStatements = new ArrayList<String>();
 	private int catchBlockLOC = 0;
 	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
+	private HashSet<CatchClause> emptyCatches = new HashSet<>();
 	
 	@Override
 	public boolean visit(CatchClause node) {
@@ -49,6 +50,10 @@ public class CatchClauseVisitor extends ASTVisitor{
 		for (Statement st : bodyStatements) {
 			catchBlockLOCStatements.add(st.toString());
 			catchBlockLOC++;
+		}
+		
+		if(isEmptyException(node)) {
+			emptyCatches.add(node);
 		}
 		
 		return super.visit(node);
@@ -99,5 +104,14 @@ public class CatchClauseVisitor extends ASTVisitor{
 	
 	public int getTryBlockLOC() {
 		return catchBlockLOC;
+	}
+	
+	public HashSet<CatchClause> getEmptyCatches() {
+		return emptyCatches;
+	}
+	
+	private boolean isEmptyException(CatchClause node) {
+			
+			return node.getBody().statements().isEmpty();
 	}
 }
