@@ -35,6 +35,7 @@ public class ExceptionFinder {
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
 	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
 	private int flowHandlingActionsCount = 0;
+	private int incompleteDPCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
@@ -77,7 +78,7 @@ public class ExceptionFinder {
 				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
 				
 				//Exception Metrics: Try Size-SLOC & Catch Size-SLOC
-				CommentVisitorTryAndCatch CommentVisitor = new CommentVisitorTryAndCatch();
+				CommentVisitorTryAndCatch CommentVisitor = new CommentVisitorTryAndCatch(parsedCompilationUnit, unit.getSource().split("\n"));
 				CommentVisitor.setTree(parsedCompilationUnit);
 				parsedCompilationUnit.accept(CommentVisitor);
 				
@@ -88,6 +89,9 @@ public class ExceptionFinder {
 				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
 				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
 				//SampleHandler.printMessage("Satatementttttt:" + catchBlockLOCStatements);
+				
+				// For 'Incomplete Implementation' Anti pattern
+				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
 				
 				printCharacteristicsMetrics(unit.getElementName());
 			}
@@ -237,6 +241,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Catch Block Count:" + catchBlockCount);
 		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
 		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
+		SampleHandler.printMessage("Incomplete Implementation anti-pattern Detected Count:" + incompleteDPCount);
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {

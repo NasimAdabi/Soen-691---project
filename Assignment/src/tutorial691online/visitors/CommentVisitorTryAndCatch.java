@@ -31,15 +31,32 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 	int commentInCatchCount = 0;
 	List<String> catchBlock = new ArrayList<String>();
 	private Map<Integer, Integer> catchScope = new HashMap<Integer, Integer>();
+	List<String> toDoComments = new ArrayList<String>();
+	List<String> otherComments = new ArrayList<String>();
+	int toDoCommentCount = 0;
+	//int otherCommentCount = 0;
+	String lineCommentString = "";
+	String blockCommentString = "";
+	String javaDocString = "";
+	CompilationUnit compilationUnit;
+    private String[] source;
 	
+    public CommentVisitorTryAndCatch(CompilationUnit compilationUnit, String[] source) {
+    	super();
+        this.compilationUnit = compilationUnit;
+        this.source = source;
+    }
+    
 	@Override
 	public boolean visit(CatchClause node){
+		
 		int catchStartPosition = tree.getLineNumber(node.getBody().getStartPosition());
 		int catchEndPosition = tree.getLineNumber(node.getBody().getStartPosition()+node.getBody().getLength());
 		//SampleHandler.printMessage("Visiting 'catchStatement' start line " + catchStartPosition + " end line " + catchEndPosition);
 		//SampleHandler.printMessage("bodyyyyy:"+node.getBody());
 		catchScope.put(catchStartPosition, catchEndPosition);
 		catchBlock.add(node.getBody().toString());
+		
 		return super.visit(node);
 	}
 	
@@ -56,40 +73,86 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 	
 	@Override
 	public boolean visit(LineComment node) {
+		int startLineNumber = compilationUnit.getLineNumber(node.getStartPosition()) - 1;
+		lineCommentString = source[startLineNumber].trim();
+		
 		int startPosition = tree.getLineNumber(node.getStartPosition());
 		
 		//SampleHandler.printMessage("Visiting 'LineComment' at line " + startPosition);
 		
-		lineComments.add(node.toString());
+		lineComments.add(lineCommentString);
 		isCommentInTry(startPosition, startPosition);
-		isCommentInCatch(startPosition, startPosition);
+		boolean isInCatch = isCommentInCatch(startPosition, startPosition);
+
+////////////////////////////////////////////////////////////////////////////////////////////
+		lineCommentString = deleteSpace(lineCommentString);
+		
+		// For 'Incomplete Implementation' Anti pattern
+		if (isInCatch == true && (lineCommentString.contains("TODO") || lineCommentString.contains("FIXME"))){
+			toDoComments.add(lineCommentString);
+			toDoCommentCount++;
+		}
+//		else {
+//			otherComments.add(blockCommentString);
+//			otherCommentCount++;
+//		}
+////////////////////////////////////////////////////////////////////////////////////////////
 		
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(BlockComment node) {
+		int startLineNumber = compilationUnit.getLineNumber(node.getStartPosition()) - 1;
+        int endLineNumber = compilationUnit.getLineNumber(node.getStartPosition() + node.getLength()) - 1;
+        StringBuffer blockComment = new StringBuffer();
+
+        for (int lineCount = startLineNumber ; lineCount<= endLineNumber; lineCount++) {
+
+            String blockCommentLine = source[lineCount].trim();
+            blockComment.append(blockCommentLine);
+            if (lineCount != endLineNumber) {
+                blockComment.append("\n");
+            }
+        }
+		
+		blockCommentString = blockComment.toString();
 		int startPosition = tree.getLineNumber(node.getStartPosition());
 		int endPosition = tree.getLineNumber(node.getStartPosition()+node.getLength());
 		
 		//SampleHandler.printMessage("Visiting 'BlockComment' at line " + startPosition + " end line " + endPosition);
 	
-		blockComments.add(node.toString());
+		blockComments.add(blockCommentString);
 		isCommentInTry(startPosition, endPosition);
-		isCommentInCatch(startPosition, endPosition);
+		boolean isInCatch = isCommentInCatch(startPosition, endPosition);
+		
+////////////////////////////////////////////////////////////////////////////////////////////
+		blockCommentString = deleteSpace(blockCommentString);
+		
+		// For 'Incomplete Implementation' Anti pattern
+		if (isInCatch == true && (blockCommentString.toLowerCase().contains("TODO") || blockCommentString.toLowerCase().contains("FIXME"))){
+			toDoComments.add(blockCommentString);
+			toDoCommentCount++;
+		}
+//		else {
+//			otherComments.add(blockCommentString);
+//			otherCommentCount++;
+//		}
+////////////////////////////////////////////////////////////////////////////////////////////
 		
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(Javadoc node) {
+		javaDocString = node.toString();
 		SampleHandler.printMessage("Visiting JavaDoc at line " + tree.getLineNumber(node.getStartPosition()) +
 									" end line " + tree.getLineNumber(node.getStartPosition()+node.getLength()));
 	
-		javaDoc.add(node.toString());
+		javaDoc.add(javaDocString);
 		return super.visit(node);
 	}
-	
+
 	public void setTree(CompilationUnit cu) {
 		tree = cu;
 	}
@@ -101,6 +164,14 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 	public int getCommentInCatchCount() {
 		return commentInCatchCount;
 	}
+	
+	public int getToDoOrFixMeCommentsCount() {
+		return toDoCommentCount;
+	}
+	
+//	public List<String> getOtherComments() {
+//		return otherComments;
+//	}
 	
 	private boolean isCommentInTry(int startPosition, int endPosition) {
 		boolean result = false;
@@ -140,13 +211,15 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 				//End of Comment Block
 				endPosition >= item.getKey() && endPosition <= item.getValue()) {
 				
-				//if comment is just a line
+				// for Line Comment
 				if(startPosition == endPosition) {
 					commentInCatchCount++;
-				}else {
-					commentInCatchCount = commentInCatchCount + (endPosition - startPosition + 1);
 				}
-				
+				// for Block comment
+				else {
+					commentInCatchCount = commentInCatchCount + (endPosition - startPosition + 1);
+				}		        
+		        
 				result = true;
 			}
 		}
@@ -154,4 +227,28 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 		return result;
 	}
 	
+//	private String necessaryReplaces(String input) {
+//		
+//		String updatedComment = deleteSpace(input);
+//        
+//		updatedComment = updatedComment.replaceAll("<.*>", "");
+//        updatedComment = updatedComment.replaceAll("{.*}", "");
+//        updatedComment = updatedComment.replaceAll("\\(.*\\)", "");
+//        updatedComment = updatedComment.toUpperCase();
+//        
+//        return updatedComment;
+//	}
+	
+    private String deleteSpace(String input)
+    {
+        if (input == null || input == "") {
+        	return input;
+        }
+
+        String updatedStr = input.replace("\n", "").replace("\r", "").replace("\t", "")
+        .replace("    ", " ").replace("    ", " ").replace("   ", " ")
+        .replace("  ", " ");
+
+        return updatedStr;
+    }
 }
