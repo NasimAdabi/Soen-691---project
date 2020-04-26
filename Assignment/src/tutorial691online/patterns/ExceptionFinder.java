@@ -11,6 +11,7 @@ import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
 import tutorial691online.visitors.OverCatchVisitor;
+import tutorial691online.visitors.ReturnStatementVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
 import tutorial691online.visitors.TryVisitor;
 
@@ -36,6 +37,7 @@ public class ExceptionFinder {
 	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
 	private int flowHandlingActionsCount = 0;
 	private int incompleteDPCount = 0;
+	private int catchReturnNullCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException {
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
@@ -51,13 +53,14 @@ public class ExceptionFinder {
 				// Give detail of detection
                 getMethodsWithTargetCatchClauses(catchVisitor);
 				flowHandlingActionsCount = catchVisitor.getActionStatements().size();
-				catchBlockCount = catchVisitor.getCatchBlockCount();
-				catchBlockLOC = catchVisitor.getTryBlockLOC();
-				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
-				
 				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
 					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
 				//}
+				catchBlockCount = catchVisitor.getCatchBlockCount();
+				catchBlockLOC = catchVisitor.getTryBlockLOC();
+				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
+				// 'Catch & Return Null' Anti-pattern
+				catchReturnNullCount = catchVisitor.catchReturnNullCount();
 				
 				// Pattern 3: overcatch
 				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
@@ -90,7 +93,7 @@ public class ExceptionFinder {
 				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
 				//SampleHandler.printMessage("Satatementttttt:" + catchBlockLOCStatements);
 				
-				// For 'Incomplete Implementation' Anti pattern
+				// For 'Incomplete Implementation' Anti-pattern
 				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
 				
 				printCharacteristicsMetrics(unit.getElementName());
@@ -242,6 +245,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
 		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
 		SampleHandler.printMessage("Incomplete Implementation anti-pattern Detected Count:" + incompleteDPCount);
+		SampleHandler.printMessage("Catch & Return Null anti-pattern Detected Count:" + catchReturnNullCount);
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {

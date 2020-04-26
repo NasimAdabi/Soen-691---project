@@ -31,6 +31,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private ArrayList<String> catchBlockLOCStatements = new ArrayList<String>();
 	private HashSet<CatchClause> emptyCatches = new HashSet<>();
 	private HashSet<CatchClause> dummyCatches = new HashSet<>();
+	private int catchReturnNullCount = 0;
 	
 	@Override
 	public boolean visit(CatchClause node) {
@@ -60,6 +61,20 @@ public class CatchClauseVisitor extends ASTVisitor{
 		if(node.getBody().statements().size() == methodInvocationVisitor.getLogPrintDefaultStatements() && !emptyCatches.contains(node)){
 			dummyCatches.add(node);
 		}
+		
+		// Catch & Return Null - Anti-Pattern
+		ReturnStatementVisitor returnStatementVisitor = new ReturnStatementVisitor();
+		node.accept(returnStatementVisitor);
+		if (!returnStatementVisitor.getReturnStatements().isEmpty())
+	    {
+			List<String> returnStatements = returnStatementVisitor.getReturnStatements();
+			for(String returnSt : returnStatements) {
+				String output = returnSt.replace("return", "").replace(";", "").trim();
+				if(output.equals("null")) {
+					catchReturnNullCount++;
+				}
+			}
+	    }
 		
 		return super.visit(node);
 	}
@@ -122,4 +137,9 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private boolean isEmptyException(CatchClause node) {
 		return node.getBody().statements().isEmpty();
 	}
+	
+	public int catchReturnNullCount() {
+		return catchReturnNullCount;
+	}
+	
 }
