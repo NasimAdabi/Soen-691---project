@@ -18,6 +18,8 @@ import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
 public class ExceptionFinder {
+	HashMap<MethodDeclaration, String> emptyCatches = new HashMap<>();
+	HashMap<MethodDeclaration, String> dummyCatches = new HashMap<>();
 	HashMap<MethodDeclaration, String> suspectMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> throwMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> catchMethods = new HashMap<>();
@@ -102,7 +104,11 @@ public class ExceptionFinder {
 	private void getMethodsWithTargetCatchClauses(CatchClauseVisitor catchClauseVisitor) {
 		
 		for(CatchClause emptyCatch: catchClauseVisitor.getEmptyCatches()) {
-			suspectMethods.put(findMethodForCatch(emptyCatch), "EmptyCatch");
+			emptyCatches.put(findMethodForCatch(emptyCatch), "EmptyCatch");
+		}
+		
+		for(CatchClause dummyCatch: catchClauseVisitor.getDummyCatches()) {
+			dummyCatches.put(findMethodForCatch(dummyCatch), "DummyCatch");
 		}
 		
 		for (CatchClause throwStatement : catchClauseVisitor.getThrowStatements()) {
@@ -167,7 +173,11 @@ public class ExceptionFinder {
 	public HashMap<MethodDeclaration, String> getSuspectMethods() {
 		return suspectMethods;
 	}
-
+	
+	public HashMap<MethodDeclaration, String> getemptyCatches() {
+		return emptyCatches;
+	}
+	
 	public void printExceptions() {
 
 //		for (MethodDeclaration declaration : throwMethods.keySet()) {
@@ -214,8 +224,8 @@ public class ExceptionFinder {
 		SampleHandler.printMessage(String.format("Over-Catch anti-pattern Detected Count: %s", catchMethods.size()));
 		SampleHandler.printMessage(
 				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
-		SampleHandler.printMessage(String.format("Catch and Do Nothing(Empty Catch) anti-pattern Detected Count: %s", suspectMethods.size()));
-	
+		SampleHandler.printMessage(String.format("Catch and Do Nothing(Empty Catch) anti-pattern Detected Count: %s", emptyCatches.size()));
+		SampleHandler.printMessage(String.format("Dummy Handler anti-pattern Detected Count: %s", dummyCatches.size()));
 	}
 	
 	public void printCharacteristicsMetrics(String fileName){
