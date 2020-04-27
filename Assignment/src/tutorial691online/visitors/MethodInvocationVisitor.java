@@ -26,6 +26,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	private int thrownStatements = 0;
 	private int numberofCheckedException =0;
 	private int flowHandlingAction = 0;
+	private int numberofMethodInvoke =0;
 	private String statementAccordingToVisitorType;
 	private String exceptionName;
 	private ITypeBinding exceptionType;
@@ -37,7 +38,8 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	public MethodInvocationVisitor(String statement) {
 		this.statementAccordingToVisitorType = statement;
 	}
-	
+	public MethodInvocationVisitor() {
+	}
 	@Override
 	public boolean visit(MethodInvocation node) {
 		this.currentNode = node;
@@ -63,21 +65,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 			this.invokedMethodNode = node;
 			IMethodBinding methodNode = node.resolveMethodBinding();
 			//SampleHandler.printMessage("Invoked Method::::::" + node.getName());
-			if(methodNode != null) {
-				ITypeBinding[] exceptionBinding = methodNode.getExceptionTypes();
-				for(ITypeBinding exception : exceptionBinding) {
-					String exceptionName = exception.getQualifiedName();
-					this.exceptionName = exceptionName;
-					//SampleHandler.printMessage("Throws exception::::::" + exceptionName);
-					
-					ITypeBinding exceptionType = exception.getTypeDeclaration();
-					this.exceptionTypeName = exceptionType.getQualifiedName();
-					this.exceptionType = exceptionType;
-					//SampleHandler.printMessage("Invoked Typeeeeeeeee::::::" + this.exceptionType.toString());
-					//SampleHandler.printMessage("testtttttttttttttttttttttttttttttt" + methodNode);
-				}
-			}
-
+			numberofMethodInvoke++;
 		}
 		if(this.statementAccordingToVisitorType == "throwBlock") {
 			IMethodBinding methodNode = node.resolveMethodBinding();
@@ -227,5 +215,8 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	
 	public int getNumberofCheckedException() {
 		return numberofCheckedException;
+	}
+	public int getNumberofMethodInvoke() {
+		return numberofMethodInvoke;
 	}
 }
