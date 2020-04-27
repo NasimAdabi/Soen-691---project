@@ -14,6 +14,8 @@ import tutorial691online.handlers.CSVCreator;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
+import tutorial691online.visitors.MethodInvocationVisitor;
+import tutorial691online.visitors.MethodInvokeVisitor;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.ReturnStatementVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
@@ -30,7 +32,7 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> catchMethods = new HashMap<>();
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
 	HashMap<TryStatement, String> tryBlocks = new HashMap<>();
-	
+	HashMap<MethodDeclaration, String> methodIvoke = new HashMap<>();
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
@@ -103,9 +105,15 @@ public class ExceptionFinder {
 				
 				// For 'Incomplete Implementation' Anti-pattern
 				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
-				
+
+				//Invoke method for each class
+				SampleHandler.printMessage("Class Name " + unit.getElementName());
+				MethodInvokeVisitor numberOfMethodInvoked = new MethodInvokeVisitor();
+				parsedCompilationUnit.accept(numberOfMethodInvoked);
+				getMethodsWithTargetInvoke(numberOfMethodInvoked);
+				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
+
 				printCharacteristicsMetrics(unit.getElementName());
-				
 				test.put(unit.getElementName(), tryBlockLOC);
 			}
 		}
@@ -118,6 +126,13 @@ public class ExceptionFinder {
 		// TODO Auto-generated method stub
 		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
 			kitchenSinkMethods.put(findMethodForThrow1(methodInvocationStatement), "Throwing the Kitchen Sink");
+		}
+	}
+	
+	private void getMethodsWithTargetInvoke(MethodInvokeVisitor numberOfMethodInvoked) {
+		// TODO Auto-generated method stub
+		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
+			methodIvoke.put(findMethodForInvoke(methodInvocationStatement), "Method Invoke");
 		}
 	}
 
@@ -174,6 +189,10 @@ public class ExceptionFinder {
 		return (MethodDeclaration) findParentMethodDeclaration(catchStatement);
 	}
 
+	private MethodDeclaration findMethodForInvoke(MethodInvocation methodInvoc) {
+		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
+	}
+	
 	private MethodDeclaration findMethodForThrow1(MethodInvocation methodInvoc) {
 		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
 	}
@@ -246,6 +265,7 @@ public class ExceptionFinder {
 				String.format("Throwing the Kitchen Sink anti-pattern Detected Count: %s", kitchenSinkMethods.size()));
 		SampleHandler.printMessage(String.format("Catch and Do Nothing(Empty Catch) anti-pattern Detected Count: %s", emptyCatches.size()));
 		SampleHandler.printMessage(String.format("Dummy Handler anti-pattern Detected Count: %s", dummyCatches.size()));
+		SampleHandler.printMessage(String.format("Method Invoke Detected Count: %s", methodIvoke.size()));
 	}
 	
 	public void printCharacteristicsMetrics(String fileName){
