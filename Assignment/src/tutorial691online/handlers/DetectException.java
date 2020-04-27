@@ -8,6 +8,10 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import tutorial691online.patterns.ExceptionFinder;
 
+import java.net.URISyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -29,7 +33,7 @@ public class DetectException extends AbstractHandler {
 				exceptionFinder.findExceptions(project);
 				exceptionFinder.printExceptions();			
 				
-			} catch (JavaModelException e) {
+			} catch (JavaModelException | URISyntaxException e) {
 				e.printStackTrace();
 			}	
 		}
