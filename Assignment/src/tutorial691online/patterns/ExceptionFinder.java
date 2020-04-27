@@ -1,12 +1,16 @@
 package tutorial691online.patterns;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.JavaModelException;
 
+import tutorial691online.handlers.CSVCreator;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
@@ -44,8 +48,12 @@ public class ExceptionFinder {
 	private int incompleteDPCount = 0;
 	private int catchReturnNullCount = 0;
 
-	public void findExceptions(IProject project) throws JavaModelException {
+	public void findExceptions(IProject project) throws JavaModelException, URISyntaxException {
+		
 		IPackageFragment[] packages = JavaCore.create(project).getPackageFragments();
+		
+		Map<String, Integer> test = new HashMap<String, Integer>();
+		
 		for (IPackageFragment mypackage : packages) {
 			for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 				// AST node
@@ -100,9 +108,15 @@ public class ExceptionFinder {
 				
 				// For 'Incomplete Implementation' Anti-pattern
 				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
+<<<<<<< .mine
 				
 				printCharacteristicsMetrics(unit.getElementName());
 		
+=======
+
+
+
+>>>>>>> .theirs
 				//Invoke method for each class
 				SampleHandler.printMessage("-------- Invoke method in try clause for each class ------------");
 				SampleHandler.printMessage("Class Name " + unit.getElementName());
@@ -110,6 +124,7 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(numberOfMethodInvoked);
 				getMethodsWithTargetInvoke(numberOfMethodInvoked);
 				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
+<<<<<<< .mine
 				
 				//Try Scope for each class
 				SampleHandler.printMessage("-------- Try Scope for each class ------------");
@@ -120,8 +135,23 @@ public class ExceptionFinder {
 				//SampleHandler.printMessage("Number of Invoke methods " + numberOfTryScope.getNumberofMethodInvoke());
 				
 				
+=======
+
+				printCharacteristicsMetrics(unit.getElementName());
+				test.put(unit.getElementName(), tryBlockLOC);
+
+
+
+
+
+
+
+>>>>>>> .theirs
 			}
 		}
+		
+		CSVCreator csvCreator = new CSVCreator();
+		csvCreator.createCSV("TrySizeLOC", test);
 	}
 
 	private void getMethodsWithTargetThrow1Clauses(Throw1ClauseVisitor throwUncheckedException) {
