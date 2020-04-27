@@ -16,14 +16,7 @@ public class TryVisitor extends ASTVisitor {
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private ArrayList<String> tryBlockLOCStatements = new ArrayList<String>();
-	
-//	@Override
-//	public boolean visit(ContinueStatement node){
-//		SampleHandler.printMessage("BLOCKKKK:" + node);
-//		
-//		return super.visit(node);
-//	}
-//	
+
 	@Override
 	public boolean visit(TryStatement node){
 		tryStatements.add(node);
@@ -38,8 +31,6 @@ public class TryVisitor extends ASTVisitor {
 			tryBlockLOC++;
 		}
 
-		//SampleHandler.printMessage("Commentttttt:" + getCommentLineCount(bodyStatements));
-		
 		return super.visit(node);
 	}
 
