@@ -13,7 +13,7 @@ private static HashSet<TryStatement> tryStatements = new HashSet<>();
 	@Override
 	public boolean visit(TryStatement node) {
 		
-		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("TryBlock");
+		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("MethodInvoke");
 		node.accept(methodInvocationVisitor);		
 		
 		numberofMethodInvoke1 = numberofMethodInvoke1 + methodInvocationVisitor.getNumberofMethodInvoke();

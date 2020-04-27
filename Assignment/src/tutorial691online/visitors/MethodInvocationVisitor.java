@@ -45,7 +45,8 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		this.currentNode = node;
 		
 		//Log statement inside catch
-		if(this.statementAccordingToVisitorType == "LogCatchSwitch"){  
+		if(this.statementAccordingToVisitorType == "LogCatchSwitch"){ 
+			
 			String nodeName = node.getName().toString();
 			//SampleHandler.printMessage("Invoked nodeName::::::" + nodeName);
 			if (IsLoggingStatement(nodeName) || IsDefaultStatement(nodeName) || IsPrintStatement(nodeName)) {
@@ -61,11 +62,37 @@ public class MethodInvocationVisitor extends ASTVisitor{
 				flowHandlingAction ++;
 			}
 		}
-		if(this.statementAccordingToVisitorType == "TryBlock") {
+		if (this.statementAccordingToVisitorType == "TryBlock") {
+
+			this.invokedMethodNode = node;
+			IMethodBinding methodNode = node.resolveMethodBinding();
+			// SampleHandler.printMessage("Invoked Method::::::" + node.getName());
+			if (methodNode != null) {
+				ITypeBinding[] exceptionBinding = methodNode.getExceptionTypes();
+				for (ITypeBinding exception : exceptionBinding) {
+					String exceptionName = exception.getQualifiedName();
+					// Integer type = findKind(exception , node);
+					this.exceptionName = exceptionName;
+					// SampleHandler.printMessage("Throws exception::::::" + exceptionName);
+
+					ITypeBinding exceptionType = exception.getTypeDeclaration();
+					this.exceptionTypeName = exceptionType.getQualifiedName();
+					this.exceptionType = exceptionType;
+					// SampleHandler.printMessage("Invoked Typeeeeeeeee::::::" +
+					// this.exceptionType.toString());
+				}
+			}
+
+		}
+		if(this.statementAccordingToVisitorType == "MethodInvoke") {
 			this.invokedMethodNode = node;
 			IMethodBinding methodNode = node.resolveMethodBinding();
 			//SampleHandler.printMessage("Invoked Method::::::" + node.getName());
 			numberofMethodInvoke++;
+		}
+		if(this.statementAccordingToVisitorType == "TryScope") {
+			SampleHandler.printMessage("Invoked Method::::::" + node);
+			
 		}
 		if(this.statementAccordingToVisitorType == "throwBlock") {
 			IMethodBinding methodNode = node.resolveMethodBinding();

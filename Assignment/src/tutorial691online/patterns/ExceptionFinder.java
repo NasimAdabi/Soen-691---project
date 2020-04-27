@@ -15,6 +15,7 @@ import tutorial691online.visitors.MethodInvokeVisitor;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.ReturnStatementVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
+import tutorial691online.visitors.TryScopeVisitor;
 import tutorial691online.visitors.TryVisitor;
 
 import org.eclipse.jdt.core.*;
@@ -29,6 +30,8 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
 	HashMap<TryStatement, String> tryBlocks = new HashMap<>();
 	HashMap<MethodDeclaration, String> methodIvoke = new HashMap<>();
+	HashMap<MethodDeclaration, String> tryScope = new HashMap<>();
+	
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
@@ -50,62 +53,73 @@ public class ExceptionFinder {
 
 				//Pattern 1: log & throw
 				// AND Exception Metrics: Flow Handling Actions
-				CatchClauseVisitor catchVisitor = new CatchClauseVisitor();
-				parsedCompilationUnit.accept(catchVisitor);
-				// Give detail of detection
-                getMethodsWithTargetCatchClauses(catchVisitor);
-				flowHandlingActionsCount = catchVisitor.getActionStatements().size();
-				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
-					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
-				//}
-				catchBlockCount = catchVisitor.getCatchBlockCount();
-				catchBlockLOC = catchVisitor.getTryBlockLOC();
-				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
-				// 'Catch & Return Null' Anti-pattern
-				catchReturnNullCount = catchVisitor.catchReturnNullCount();
+//				CatchClauseVisitor catchVisitor = new CatchClauseVisitor();
+//				parsedCompilationUnit.accept(catchVisitor);
+//				// Give detail of detection
+//                getMethodsWithTargetCatchClauses(catchVisitor);
+//				flowHandlingActionsCount = catchVisitor.getActionStatements().size();
+//				//for (String actionStatement : exceptionVisitor.getActionStatements()) {
+//					//SampleHandler.printMessage("Actions Statement: " + actionStatement);
+//				//}
+//				catchBlockCount = catchVisitor.getCatchBlockCount();
+//				catchBlockLOC = catchVisitor.getTryBlockLOC();
+//				catchBlockLOCStatements = catchVisitor.getCatchBlockLOCStatements();
+//				// 'Catch & Return Null' Anti-pattern
+//				catchReturnNullCount = catchVisitor.catchReturnNullCount();
+//				
+//				// Pattern 3: overcatch
+//				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
+//				parsedCompilationUnit.accept(overCatchVisitor);
+//				getMethodsWithTargetTryClauses(overCatchVisitor);
+//
+//				//Pattern 2 : Kitchen Sink
+//				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
+//				parsedCompilationUnit.accept(throwUncheckedException1);
+//				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
+//				
+//				//Exception Metrics: Try Quantity & Try Size-LOC
+//				TryVisitor tryVisitor = new TryVisitor();
+//				parsedCompilationUnit.accept(tryVisitor);
+//				//getMethodsWithTryBlock(tryVisitor);
+//				tryBlockCount = tryVisitor.getTryBlockCount();
+//				tryBlockLOC = tryVisitor.getTryBlockLOC();
+//				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
+//				
+//				//Exception Metrics: Try Size-SLOC & Catch Size-SLOC
+//				CommentVisitorTryAndCatch CommentVisitor = new CommentVisitorTryAndCatch(parsedCompilationUnit, unit.getSource().split("\n"));
+//				CommentVisitor.setTree(parsedCompilationUnit);
+//				parsedCompilationUnit.accept(CommentVisitor);
+//				
+//				for (Comment comment : (List<Comment>) parsedCompilationUnit.getCommentList()) {
+//					 comment.accept(CommentVisitor);
+//				 }
+//				tryBlockSLOC = CommentVisitor.getCommentInTryCount();
+//				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
+//				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
+//				//SampleHandler.printMessage("Satatementttttt:" + catchBlockLOCStatements);
+//				
+//				// For 'Incomplete Implementation' Anti-pattern
+//				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
+//				
+//				printCharacteristicsMetrics(unit.getElementName());
 				
-				// Pattern 3: overcatch
-				OverCatchVisitor overCatchVisitor = new OverCatchVisitor();
-				parsedCompilationUnit.accept(overCatchVisitor);
-				getMethodsWithTargetTryClauses(overCatchVisitor);
-
-				//Pattern 2 : Kitchen Sink
-				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
-				parsedCompilationUnit.accept(throwUncheckedException1);
-				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
+//				//Invoke method for each class
+//				SampleHandler.printMessage("-------- Invoke method in try clause for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				MethodInvokeVisitor numberOfMethodInvoked = new MethodInvokeVisitor();
+//				parsedCompilationUnit.accept(numberOfMethodInvoked);
+//				getMethodsWithTargetInvoke(numberOfMethodInvoked);
+//				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
 				
-				//Exception Metrics: Try Quantity & Try Size-LOC
-				TryVisitor tryVisitor = new TryVisitor();
-				parsedCompilationUnit.accept(tryVisitor);
-				//getMethodsWithTryBlock(tryVisitor);
-				tryBlockCount = tryVisitor.getTryBlockCount();
-				tryBlockLOC = tryVisitor.getTryBlockLOC();
-				tryBlockLOCStatements = tryVisitor.getTryBlockLOCStatements();
-				
-				//Exception Metrics: Try Size-SLOC & Catch Size-SLOC
-				CommentVisitorTryAndCatch CommentVisitor = new CommentVisitorTryAndCatch(parsedCompilationUnit, unit.getSource().split("\n"));
-				CommentVisitor.setTree(parsedCompilationUnit);
-				parsedCompilationUnit.accept(CommentVisitor);
-				
-				for (Comment comment : (List<Comment>) parsedCompilationUnit.getCommentList()) {
-					 comment.accept(CommentVisitor);
-				 }
-				tryBlockSLOC = CommentVisitor.getCommentInTryCount();
-				//SampleHandler.printMessage("Satatementttttt:" + tryBlockLOCStatements);
-				catchBlockSLOC = CommentVisitor.getCommentInCatchCount();
-				//SampleHandler.printMessage("Satatementttttt:" + catchBlockLOCStatements);
-				
-				// For 'Incomplete Implementation' Anti-pattern
-				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
-				
-				printCharacteristicsMetrics(unit.getElementName());
-				
-				//Invoke method for each class
+				//Try Scope for each class
+				SampleHandler.printMessage("-------- Try Scope for each class ------------");
 				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				MethodInvokeVisitor numberOfMethodInvoked = new MethodInvokeVisitor();
-				parsedCompilationUnit.accept(numberOfMethodInvoked);
-				getMethodsWithTargetInvoke(numberOfMethodInvoked);
-				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
+				TryScopeVisitor numberOfTryScope = new TryScopeVisitor();
+				parsedCompilationUnit.accept(numberOfTryScope);
+				getMethodsWithTargetTryScope(numberOfTryScope);
+				//SampleHandler.printMessage("Number of Invoke methods " + numberOfTryScope.getNumberofMethodInvoke());
+				
+				
 			}
 		}
 	}
@@ -119,8 +133,15 @@ public class ExceptionFinder {
 	
 	private void getMethodsWithTargetInvoke(MethodInvokeVisitor numberOfMethodInvoked) {
 		// TODO Auto-generated method stub
-		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
+		for (TryStatement methodInvocationStatement : MethodInvokeVisitor.getTryStatements()) {
 			methodIvoke.put(findMethodForInvoke(methodInvocationStatement), "Method Invoke");
+		}
+	}
+	
+	private void getMethodsWithTargetTryScope(TryScopeVisitor numberOfTryScope) {
+		// TODO Auto-generated method stub
+		for (TryStatement methodInvocationStatement : TryScopeVisitor.getTryStatements()) {
+			tryScope.put(findMethodForTryScope(methodInvocationStatement), "Try Scope");
 		}
 	}
 
@@ -177,10 +198,12 @@ public class ExceptionFinder {
 		return (MethodDeclaration) findParentMethodDeclaration(catchStatement);
 	}
 
-	private MethodDeclaration findMethodForInvoke(MethodInvocation methodInvoc) {
-		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
+	private MethodDeclaration findMethodForInvoke(TryStatement methodInvocationStatement) {
+		return (MethodDeclaration) findParentMethodDeclaration(methodInvocationStatement);
 	}
-	
+	private MethodDeclaration findMethodForTryScope(TryStatement trymethodInvoc) {
+		return (MethodDeclaration) findParentMethodDeclaration(trymethodInvoc);
+	}
 	private MethodDeclaration findMethodForThrow1(MethodInvocation methodInvoc) {
 		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
 	}

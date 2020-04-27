@@ -14,16 +14,14 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 public class TryScopeVisitor extends ASTVisitor  {
 	private static HashSet<TryStatement> tryStatements = new HashSet<>();
-	
 	@Override
 	public boolean visit(TryStatement node) {
-		
-		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("TryBlock");
+		//TryStatement tryStatement = (TryStatement) node.getParent();
+		// SampleHandler.printMessage("TryyyyBlock:::::"+tryStatement.getBody().toString());
+		MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor("TryScope");
 		node.accept(methodInvocationVisitor);
 		
-		if(methodInvocationVisitor.getNumberofCheckedException() > 1) {
 			tryStatements.add(node);
-		}
 		
 		return super.visit(node);
 	}
