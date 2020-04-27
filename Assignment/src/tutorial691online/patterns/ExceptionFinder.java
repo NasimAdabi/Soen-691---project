@@ -108,15 +108,11 @@ public class ExceptionFinder {
 				
 				// For 'Incomplete Implementation' Anti-pattern
 				incompleteDPCount = CommentVisitor.getToDoOrFixMeCommentsCount();
-<<<<<<< .mine
 				
 				printCharacteristicsMetrics(unit.getElementName());
-		
-=======
+				test.put(unit.getElementName(), tryBlockLOC);
+				
 
-
-
->>>>>>> .theirs
 				//Invoke method for each class
 				SampleHandler.printMessage("-------- Invoke method in try clause for each class ------------");
 				SampleHandler.printMessage("Class Name " + unit.getElementName());
@@ -124,8 +120,7 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(numberOfMethodInvoked);
 				getMethodsWithTargetInvoke(numberOfMethodInvoked);
 				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
-<<<<<<< .mine
-				
+
 				//Try Scope for each class
 				SampleHandler.printMessage("-------- Try Scope for each class ------------");
 				SampleHandler.printMessage("Class Name " + unit.getElementName());
@@ -133,20 +128,7 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(numberOfTryScope);
 				getMethodsWithTargetTryScope(numberOfTryScope);
 				//SampleHandler.printMessage("Number of Invoke methods " + numberOfTryScope.getNumberofMethodInvoke());
-				
-				
-=======
 
-				printCharacteristicsMetrics(unit.getElementName());
-				test.put(unit.getElementName(), tryBlockLOC);
-
-
-
-
-
-
-
->>>>>>> .theirs
 			}
 		}
 		
