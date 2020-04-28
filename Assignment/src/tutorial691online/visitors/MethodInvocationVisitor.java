@@ -86,13 +86,13 @@ public class MethodInvocationVisitor extends ASTVisitor{
 		}
 		if(this.statementAccordingToVisitorType == "MethodInvoke") {
 			this.invokedMethodNode = node;
+			
 			IMethodBinding methodNode = node.resolveMethodBinding();
-			//SampleHandler.printMessage("Invoked Method::::::" + node.getName());
+			//SampleHandler.printMessage("Invoked Method::::::" + node.getParent().getParent().getParent());
 			numberofMethodInvoke++;
 		}
 		if(this.statementAccordingToVisitorType == "TryScope") {
-			SampleHandler.printMessage("Invoked Method::::::" + node);
-			
+			//SampleHandler.printMessage("Invoked Method::::::" + node);			
 		}
 		if(this.statementAccordingToVisitorType == "throwBlock") {
 			IMethodBinding methodNode = node.resolveMethodBinding();
