@@ -12,11 +12,15 @@ class ThrowExample {
 
 public class kitchen{ 
   public static void main(String args[]){ 
+	  int i=0;
+	  while(i<1) {
    try{ 
      ThrowExample obj=new ThrowExample(); 
      obj.myMethod(1); 
    }catch(Exception ex){
      System.out.println(ex);
     } 
+  }
+	  i++;
   }
 }

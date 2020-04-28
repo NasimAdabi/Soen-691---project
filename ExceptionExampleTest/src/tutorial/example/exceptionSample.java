@@ -18,7 +18,7 @@ public class exceptionSample {
 	
 	
 	public void bar()   {
-
+		for (int i=0; i<1; i++) {
 		try{
 
 			foo();
@@ -28,6 +28,7 @@ public class exceptionSample {
 			e.printStackTrace();
 
 		}
+	}
 
 	}
 
