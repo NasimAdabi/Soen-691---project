@@ -88,7 +88,7 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 		lineCommentString = deleteSpace(lineCommentString);
 		
 		// For 'Incomplete Implementation' Anti pattern
-		if (isInCatch == true && (lineCommentString.contains("TODO") || lineCommentString.contains("FIXME"))){
+		if (isInCatch == true && (lineCommentString.toUpperCase().contains("TODO") || lineCommentString.toUpperCase().contains("FIXME"))){
 			toDoComments.add(lineCommentString);
 			toDoCommentCount++;
 		}
@@ -130,7 +130,7 @@ public class CommentVisitorTryAndCatch extends ASTVisitor{
 		blockCommentString = deleteSpace(blockCommentString);
 		
 		// For 'Incomplete Implementation' Anti pattern
-		if (isInCatch == true && (blockCommentString.toLowerCase().contains("TODO") || blockCommentString.toLowerCase().contains("FIXME"))){
+		if (isInCatch == true && (blockCommentString.toUpperCase().contains("TODO") || blockCommentString.toUpperCase().contains("FIXME"))){
 			toDoComments.add(blockCommentString);
 			toDoCommentCount++;
 		}
