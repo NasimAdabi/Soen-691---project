@@ -14,11 +14,14 @@ import tutorial691online.handlers.CSVCreator;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
+import tutorial691online.visitors.FlowQuantityVisitor;
+import tutorial691online.visitors.FlowTypePrevelanceVisitor;
 import tutorial691online.visitors.MethodInvocationVisitor;
 import tutorial691online.visitors.MethodInvokeVisitor;
 import tutorial691online.visitors.OverCatchVisitor;
 import tutorial691online.visitors.ReturnStatementVisitor;
 import tutorial691online.visitors.Throw1ClauseVisitor;
+import tutorial691online.visitors.TryScopeVisitor;
 import tutorial691online.visitors.TryVisitor;
 
 import org.eclipse.jdt.core.*;
@@ -33,6 +36,8 @@ public class ExceptionFinder {
 	HashMap<MethodDeclaration, String> kitchenSinkMethods = new HashMap<>();
 	HashMap<TryStatement, String> tryBlocks = new HashMap<>();
 	HashMap<MethodDeclaration, String> methodIvoke = new HashMap<>();
+	HashMap<MethodDeclaration, String> tryScope = new HashMap<>();
+	HashMap<MethodDeclaration, String> flowQuantity = new HashMap<>();
 	private int tryBlockCount = 0;
 	private int tryBlockLOC = 0;
 	private int tryBlockSLOC = 0;
@@ -227,11 +232,29 @@ public class ExceptionFinder {
 			kitchenSinkMethods.put(findMethodForThrow1(methodInvocationStatement), "Throwing the Kitchen Sink");
 		}
 	}
-	
+	private void getMethodsWithTargetFlowQuantity(FlowQuantityVisitor throwUncheckedException) {
+		// TODO Auto-generated method stub
+		for (MethodInvocation methodInvocationStatement : FlowQuantityVisitor.getmethodInvocationStatements()) {
+			flowQuantity.put(findMethodForThrow1(methodInvocationStatement), "Flow Quantity");
+		}
+	}
 	private void getMethodsWithTargetInvoke(MethodInvokeVisitor numberOfMethodInvoked) {
 		// TODO Auto-generated method stub
-		for (MethodInvocation methodInvocationStatement : Throw1ClauseVisitor.getmethodInvocationStatements()) {
+		for (TryStatement methodInvocationStatement : MethodInvokeVisitor.getTryStatements()) {
 			methodIvoke.put(findMethodForInvoke(methodInvocationStatement), "Method Invoke");
+		}
+	}
+	
+	private void getMethodsWithTargetTryScope(TryScopeVisitor numberOfTryScope) {
+		// TODO Auto-generated method stub
+		for (TryStatement methodInvocationStatement : TryScopeVisitor.getTryStatements()) {
+			tryScope.put(findMethodForTryScope(methodInvocationStatement), "Try Scope");
+		}
+	}
+	private void getMethodsWithTargetTypePrevalance(FlowTypePrevelanceVisitor numberOfTypePrevalance) {
+		// TODO Auto-generated method stub
+		for (TryStatement methodInvocationStatement : FlowTypePrevelanceVisitor.getTryStatements()) {
+			tryScope.put(findMethodForTryScope(methodInvocationStatement), "Flow Type Prevalance");
 		}
 	}
 
@@ -288,10 +311,12 @@ public class ExceptionFinder {
 		return (MethodDeclaration) findParentMethodDeclaration(catchStatement);
 	}
 
-	private MethodDeclaration findMethodForInvoke(MethodInvocation methodInvoc) {
-		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
+	private MethodDeclaration findMethodForInvoke(TryStatement methodInvocationStatement) {
+		return (MethodDeclaration) findParentMethodDeclaration(methodInvocationStatement);
 	}
-	
+	private MethodDeclaration findMethodForTryScope(TryStatement trymethodInvoc) {
+		return (MethodDeclaration) findParentMethodDeclaration(trymethodInvoc);
+	}
 	private MethodDeclaration findMethodForThrow1(MethodInvocation methodInvoc) {
 		return (MethodDeclaration) findParentMethodThrow1Declaration(methodInvoc);
 	}
