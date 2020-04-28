@@ -137,6 +137,43 @@ public class ExceptionFinder {
 //				invokedMethodsCount = numberOfMethodInvoked.getNumberofMethodInvoke();
 //				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
 
+				//Try Scope for each class
+				SampleHandler.printMessage("-------- Try Scope for each class ------------");
+				SampleHandler.printMessage("Class Name " + unit.getElementName());
+				TryScopeVisitor numberOfTryScope = new TryScopeVisitor();
+				parsedCompilationUnit.accept(numberOfTryScope);
+				getMethodsWithTargetTryScope(numberOfTryScope);
+				SampleHandler.printMessage("Number of Try Scope " + numberOfTryScope.getNumberOfTryScope());
+	
+				
+				
+				//Flow quantity 
+				SampleHandler.printMessage("-------- Flow Quantity for each class ------------");
+				SampleHandler.printMessage("Class Name " + unit.getElementName());
+				FlowQuantityVisitor numberOfflowhandler = new FlowQuantityVisitor();
+				parsedCompilationUnit.accept(numberOfflowhandler);
+				getMethodsWithTargetFlowQuantity(numberOfflowhandler);
+				SampleHandler.printMessage("Number of flow Quantity " + numberOfflowhandler.getNumberOfFlowQuantity());	
+				
+				
+				//Flow type prevalence 
+				SampleHandler.printMessage("-------- Flow Type Prevalence for each class ------------");
+				SampleHandler.printMessage("Class Name " + unit.getElementName());
+				FlowTypePrevelanceVisitor numberOfflowtypeprevalance = new FlowTypePrevelanceVisitor();
+				parsedCompilationUnit.accept(numberOfflowtypeprevalance);
+				getMethodsWithTargetTypePrevalance(numberOfflowtypeprevalance);
+				int averageNumber;
+				if (numberOfflowtypeprevalance.getNumberOfTryBlocks() ==0 )
+					averageNumber =0;
+				else
+					averageNumber = numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance()/numberOfflowtypeprevalance.getNumberOfTryBlocks();
+				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance() " + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance());
+				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfTryBlocks() " + numberOfflowtypeprevalance.getNumberOfTryBlocks());
+				SampleHandler.printMessage("Number of flow type Prevalance " + averageNumber);
+				
+				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
+			
+				
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
 //				//////Metrics
