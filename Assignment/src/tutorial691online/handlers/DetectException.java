@@ -44,7 +44,7 @@ public class DetectException extends AbstractHandler {
 		Map<String, Integer> metricThrowKitchenSink = new HashMap<String, Integer>();
 		Map<String, Integer> metricTryScope = new HashMap<String, Integer>();
 		Map<String, Integer> metricFlowTypePrevalance = new HashMap<String, Integer>();
-		
+		Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 		for(IProject project : projects) {
 			SampleHandler.printMessage("DETECTING IN: " + project.getName());
 			ExceptionFinder exceptionFinder = new ExceptionFinder();
@@ -70,7 +70,8 @@ public class DetectException extends AbstractHandler {
 //				metricOverCatch = exceptionFinder.getProject_Metric_OverCatch();
 //				metricThrowKitchenSink = exceptionFinder.getProject_Metric_ThrowKitchenSink();
 //				metricTryScope = exceptionFinder.getProject_Metric_TryScope();
-				metricFlowTypePrevalance = exceptionFinder.getProject_Metric_FlowTypePrevalance();
+//				metricFlowTypePrevalance = exceptionFinder.getProject_Metric_FlowTypePrevalance();
+				metricFlowQuantity = exceptionFinder.getProject_Metric_FlowQuantity();
 				
 				exceptionFinder.printExceptions();			
 				
@@ -98,7 +99,8 @@ public class DetectException extends AbstractHandler {
 //		createCSVMetrics("OverCatch_AntiPattern", metricOverCatch);
 //		createCSVMetrics("ThrowKitchenSink_AntiPattern", metricThrowKitchenSink);
 //		createCSVMetrics("TryScope", metricTryScope);
-		createCSVMetrics("FlowTypePrevalance", metricFlowTypePrevalance);
+//		createCSVMetrics("FlowTypePrevalance", metricFlowTypePrevalance);
+		createCSVMetrics("FlowQuantity", metricFlowQuantity);
 		
 		SampleHandler.printMessage("DONE DETECTING");
 		return null;
