@@ -65,6 +65,8 @@ public class ExceptionFinder {
 	private static Map<String, Integer> metricOverCatch = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricThrowKitchenSink = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricTryScope = new HashMap<String, Integer>();
+	private static Map<String, Integer> metricFlowTypePrevalance = new HashMap<String, Integer>();
+	private static Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 
 	private int invokedMethodsCount = 0;
 	
@@ -100,10 +102,10 @@ public class ExceptionFinder {
 //				parsedCompilationUnit.accept(overCatchVisitor);
 //				getMethodsWithTargetTryClauses(overCatchVisitor);
 //
-				//Pattern 2 : Kitchen Sink
-				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
-				parsedCompilationUnit.accept(throwUncheckedException1);
-				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
+//				//Pattern 2 : Kitchen Sink
+//				Throw1ClauseVisitor throwUncheckedException1 = new Throw1ClauseVisitor();
+//				parsedCompilationUnit.accept(throwUncheckedException1);
+//				getMethodsWithTargetThrow1Clauses(throwUncheckedException1);
 				
 				//Exception Metrics: Try Quantity & Try Size-LOC
 //				TryVisitor tryVisitor = new TryVisitor();
@@ -137,25 +139,25 @@ public class ExceptionFinder {
 //				invokedMethodsCount = numberOfMethodInvoked.getNumberofMethodInvoke();
 //				SampleHandler.printMessage("Number of Invoke methods " + numberOfMethodInvoked.getNumberofMethodInvoke());
 
-				//Try Scope for each class
-				SampleHandler.printMessage("-------- Try Scope for each class ------------");
-				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				TryScopeVisitor numberOfTryScope = new TryScopeVisitor();
-				parsedCompilationUnit.accept(numberOfTryScope);
-				getMethodsWithTargetTryScope(numberOfTryScope);
-				SampleHandler.printMessage("Number of Try Scope " + numberOfTryScope.getNumberOfTryScope());
+//				//Try Scope for each class
+//				SampleHandler.printMessage("-------- Try Scope for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				TryScopeVisitor numberOfTryScope = new TryScopeVisitor();
+//				parsedCompilationUnit.accept(numberOfTryScope);
+//				getMethodsWithTargetTryScope(numberOfTryScope);
+//				SampleHandler.printMessage("Number of Try Scope " + numberOfTryScope.getNumberOfTryScope());
 	
 				
 				
-				//Flow quantity 
-				SampleHandler.printMessage("-------- Flow Quantity for each class ------------");
-				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				FlowQuantityVisitor numberOfflowhandler = new FlowQuantityVisitor();
-				parsedCompilationUnit.accept(numberOfflowhandler);
-				getMethodsWithTargetFlowQuantity(numberOfflowhandler);
-				SampleHandler.printMessage("Number of flow Quantity " + numberOfflowhandler.getNumberOfFlowQuantity());	
-				
-				
+//				//Flow quantity 
+//				SampleHandler.printMessage("-------- Flow Quantity for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				FlowQuantityVisitor numberOfflowhandler = new FlowQuantityVisitor();
+//				parsedCompilationUnit.accept(numberOfflowhandler);
+//				getMethodsWithTargetFlowQuantity(numberOfflowhandler);
+//				SampleHandler.printMessage("Number of flow Quantity " + numberOfflowhandler.getNumberOfFlowQuantity());	
+//				
+//				
 				//Flow type prevalence 
 				SampleHandler.printMessage("-------- Flow Type Prevalence for each class ------------");
 				SampleHandler.printMessage("Class Name " + unit.getElementName());
@@ -170,9 +172,9 @@ public class ExceptionFinder {
 				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance() " + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance());
 				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfTryBlocks() " + numberOfflowtypeprevalance.getNumberOfTryBlocks());
 				SampleHandler.printMessage("Number of flow type Prevalance " + averageNumber);
-				
-				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
-			
+//				
+//				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
+//			
 				
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
@@ -193,7 +195,9 @@ public class ExceptionFinder {
 //                metricDummyCatch.put(unit.getElementName(), dummyCatches.size());
 //                metricLogAndThrow.put(unit.getElementName(), throwMethods.size());
 //                metricOverCatch.put(unit.getElementName(), catchMethods.size());
-				metricThrowKitchenSink.put(unit.getElementName(), kitchenSinkMethods.size());
+//				metricThrowKitchenSink.put(unit.getElementName(), kitchenSinkMethods.size());
+//				metricTryScope.put(unit.getElementName(), numberOfTryScope.getNumberOfTryScope());
+				metricFlowTypePrevalance.put(unit.getElementName(), averageNumber);
 				////////////metricTryScope.put(unit.getElementName(), tryScope.size());
 			}
 		}
@@ -202,10 +206,12 @@ public class ExceptionFinder {
 	public static Map<String, Integer> getProject_Metric_ThrowKitchenSink() {
 		return metricThrowKitchenSink;
 	}
-	
-//	public static Map<String, Integer> getProject_Metric_TryScope() {
-//		return metricTryScope;
-//	}
+	public static Map<String, Integer> getProject_Metric_FlowTypePrevalance() {
+		return metricFlowTypePrevalance;
+	}
+	public static Map<String, Integer> getProject_Metric_TryScope() {
+		return metricTryScope;
+	}
 	
 	public static Map<String, Integer> getProject_Metric_CatchAndDoNothing() {
 		return metricCatchAndDoNothing;
