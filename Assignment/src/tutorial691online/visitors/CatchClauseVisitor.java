@@ -33,7 +33,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private HashSet<CatchClause> emptyCatches = new HashSet<>();
 	private HashSet<CatchClause> dummyCatches = new HashSet<>();
 	private int catchReturnNullCount = 0;
-	private String catchArguments;
+	private ITypeBinding catchArguments;
 	
 	@Override
 	public boolean visit(CatchClause node) {
@@ -81,13 +81,13 @@ public class CatchClauseVisitor extends ASTVisitor{
 		
 		SingleVariableDeclaration exceptionType = node.getException();
 		ITypeBinding exceptionTypeBinding = exceptionType.getType().resolveBinding();
-		catchArguments = exceptionTypeBinding.getName();
+		catchArguments = exceptionTypeBinding;
 		//SampleHandler.printMessage("catch::::::" + ThrowInCatchArgument);
 		
 		return super.visit(node);
 	}
 	
-	public String getCatchArguments() {
+	public ITypeBinding getCatchArguments() {
 		return catchArguments;	
 	}
 	

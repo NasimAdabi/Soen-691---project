@@ -68,6 +68,7 @@ public class ExceptionFinder {
 	private static Map<String, Integer> metricTryScope = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricFlowTypePrevalance = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
+	private static Map<String, Integer> metricExceptionHandlingStrategy = new HashMap<String, Integer>();
 
 	private int invokedMethodsCount = 0;
 	private int exceptionHandlingStrategyCount = 0;
@@ -180,7 +181,6 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(exceptionHandlingStrategyVisitor);
 				exceptionHandlingStrategyCount = exceptionHandlingStrategyVisitor.ExceptionHandlingStrategyCount();
 
-
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
 //				//////Metrics
@@ -196,18 +196,23 @@ public class ExceptionFinder {
 				
 //              metricIncompleteImplementationCount.put(unit.getElementName(), incompleteDPCount);
 //				metricInvokedMethodsCount.put(unit.getElementName(), invokedMethodsCount);
-//                metricCatchAndDoNothing.put(unit.getElementName(), emptyCatches.size());
-//                metricDummyCatch.put(unit.getElementName(), dummyCatches.size());
-//                metricLogAndThrow.put(unit.getElementName(), throwMethods.size());
-//                metricOverCatch.put(unit.getElementName(), catchMethods.size());
+//              metricCatchAndDoNothing.put(unit.getElementName(), emptyCatches.size());
+//              metricDummyCatch.put(unit.getElementName(), dummyCatches.size());
+//              metricLogAndThrow.put(unit.getElementName(), throwMethods.size());
+//              metricOverCatch.put(unit.getElementName(), catchMethods.size());
 //				metricThrowKitchenSink.put(unit.getElementName(), kitchenSinkMethods.size());
 //				metricTryScope.put(unit.getElementName(), numberOfTryScope.getNumberOfTryScope());
 //				metricFlowTypePrevalance.put(unit.getElementName(), averageNumber);
 //				metricFlowQuantity.put(unit.getElementName(), numberofFlowQuantity);
+				metricExceptionHandlingStrategy.put(unit.getElementName(), exceptionHandlingStrategyCount);
 			}
 		}
 	}
 
+	public static Map<String, Integer> getProject_Metric_ExceptionHandlingStrategy() {
+		return metricExceptionHandlingStrategy;
+	}
+	
 	public static Map<String, Integer> getProject_Metric_ThrowKitchenSink() {
 		return metricThrowKitchenSink;
 	}
@@ -444,16 +449,16 @@ public class ExceptionFinder {
 	}
 	
 	public void printCharacteristicsMetrics(String fileName){
-		SampleHandler.printMessage("File name: " + fileName);
-		SampleHandler.printMessage("Flow Handling Actions Count: " + flowHandlingActionsCount);
-		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
-		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
-		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
-		SampleHandler.printMessage("Catch Block Count:" + catchBlockCount);
-		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
-		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
-		SampleHandler.printMessage("Incomplete Implementation anti-pattern Detected Count:" + incompleteDPCount);
-		SampleHandler.printMessage("Catch & Return Null anti-pattern Detected Count:" + catchReturnNullCount);
+//		SampleHandler.printMessage("File name: " + fileName);
+//		SampleHandler.printMessage("Flow Handling Actions Count: " + flowHandlingActionsCount);
+//		SampleHandler.printMessage("Try Block Count:" + tryBlockCount);
+//		SampleHandler.printMessage("Try-LOC:" + tryBlockLOC);
+//		SampleHandler.printMessage("Try-SLOC:" + tryBlockSLOC);
+//		SampleHandler.printMessage("Catch Block Count:" + catchBlockCount);
+//		SampleHandler.printMessage("Catch-LOC:" + catchBlockLOC);
+//		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
+//		SampleHandler.printMessage("Incomplete Implementation anti-pattern Detected Count:" + incompleteDPCount);
+//		SampleHandler.printMessage("Catch & Return Null anti-pattern Detected Count:" + catchReturnNullCount);
 		SampleHandler.printMessage("Exception Handling Strategy anti-pattern Count :" + exceptionHandlingStrategyCount);
 	}
 
