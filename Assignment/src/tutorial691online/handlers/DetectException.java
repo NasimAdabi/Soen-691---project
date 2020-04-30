@@ -45,6 +45,7 @@ public class DetectException extends AbstractHandler {
 		Map<String, Integer> metricTryScope = new HashMap<String, Integer>();
 		Map<String, Integer> metricFlowTypePrevalance = new HashMap<String, Integer>();
 		Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
+		Map<String, Integer> metricFlowSourceDeclared = new HashMap<String, Integer>();
 		for(IProject project : projects) {
 			SampleHandler.printMessage("DETECTING IN: " + project.getName());
 			ExceptionFinder exceptionFinder = new ExceptionFinder();
@@ -72,6 +73,7 @@ public class DetectException extends AbstractHandler {
 //				metricTryScope = exceptionFinder.getProject_Metric_TryScope();
 //				metricFlowTypePrevalance = exceptionFinder.getProject_Metric_FlowTypePrevalance();
 //				metricFlowQuantity = exceptionFinder.getProject_Metric_FlowQuantity();
+				metricFlowSourceDeclared = exceptionFinder.getProject_Metric_FlowSourceDeclared();
 				
 				exceptionFinder.printExceptions();			
 				
@@ -101,6 +103,7 @@ public class DetectException extends AbstractHandler {
 //		createCSVMetrics("TryScope", metricTryScope);
 //		createCSVMetrics("FlowTypePrevalance", metricFlowTypePrevalance);
 //		createCSVMetrics("FlowQuantity", metricFlowQuantity);
+		createCSVMetrics("FlowSourceDeclared", metricFlowSourceDeclared);
 		
 		SampleHandler.printMessage("DONE DETECTING");
 		return null;
