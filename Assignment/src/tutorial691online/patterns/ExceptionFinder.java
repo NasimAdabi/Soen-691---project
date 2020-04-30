@@ -14,6 +14,7 @@ import tutorial691online.handlers.CSVCreator;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
+import tutorial691online.visitors.ExceptionHandlingStrategyVisitor;
 import tutorial691online.visitors.FlowQuantityVisitor;
 import tutorial691online.visitors.FlowTypePrevelanceVisitor;
 import tutorial691online.visitors.MethodInvocationVisitor;
@@ -69,7 +70,7 @@ public class ExceptionFinder {
 	private static Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 
 	private int invokedMethodsCount = 0;
-	
+	private int exceptionHandlingStrategyCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException, URISyntaxException {
 		
@@ -149,33 +150,37 @@ public class ExceptionFinder {
 	
 				
 				
-				//Flow quantity 
-				SampleHandler.printMessage("-------- Flow Quantity for each class ------------");
-				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				FlowQuantityVisitor numberOfflowhandler = new FlowQuantityVisitor();
-				parsedCompilationUnit.accept(numberOfflowhandler);
-				getMethodsWithTargetFlowQuantity(numberOfflowhandler);
-				SampleHandler.printMessage("Number of flow Quantity " + numberOfflowhandler.getNumberOfFlowQuantity());	
+//				//Flow quantity 
+//				SampleHandler.printMessage("-------- Flow Quantity for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				FlowQuantityVisitor numberOfflowhandler = new FlowQuantityVisitor();
+//				parsedCompilationUnit.accept(numberOfflowhandler);
+//				getMethodsWithTargetFlowQuantity(numberOfflowhandler);
+//				SampleHandler.printMessage("Number of flow Quantity " + numberOfflowhandler.getNumberOfFlowQuantity());	
 //				
 //				
-				//Flow type prevalence 
-				SampleHandler.printMessage("-------- Flow Type Prevalence for each class ------------");
-				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				FlowTypePrevelanceVisitor numberOfflowtypeprevalance = new FlowTypePrevelanceVisitor();
-				parsedCompilationUnit.accept(numberOfflowtypeprevalance);
-				getMethodsWithTargetTypePrevalance(numberOfflowtypeprevalance);
-				int averageNumber;
-				if (numberOfflowtypeprevalance.getNumberOfTryBlocks() ==0 )
-					averageNumber =0;
-				else
-					averageNumber = numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance()/numberOfflowtypeprevalance.getNumberOfTryBlocks();
-				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance() " + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance());
-				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfTryBlocks() " + numberOfflowtypeprevalance.getNumberOfTryBlocks());
-				SampleHandler.printMessage("Number of flow type Prevalance " + averageNumber);
-				
-				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
+//				//Flow type prevalence 
+//				SampleHandler.printMessage("-------- Flow Type Prevalence for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				FlowTypePrevelanceVisitor numberOfflowtypeprevalance = new FlowTypePrevelanceVisitor();
+//				parsedCompilationUnit.accept(numberOfflowtypeprevalance);
+//				getMethodsWithTargetTypePrevalance(numberOfflowtypeprevalance);
+//				int averageNumber;
+//				if (numberOfflowtypeprevalance.getNumberOfTryBlocks() ==0 )
+//					averageNumber =0;
+//				else
+//					averageNumber = numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance()/numberOfflowtypeprevalance.getNumberOfTryBlocks();
+//				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance() " + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance());
+//				SampleHandler.printMessage("numberOfflowtypeprevalance.getNumberOfTryBlocks() " + numberOfflowtypeprevalance.getNumberOfTryBlocks());
+//				SampleHandler.printMessage("Number of flow type Prevalance " + averageNumber);
+//				
+//				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
 			
-				
+				ExceptionHandlingStrategyVisitor exceptionHandlingStrategyVisitor = new ExceptionHandlingStrategyVisitor();
+				parsedCompilationUnit.accept(exceptionHandlingStrategyVisitor);
+				exceptionHandlingStrategyCount = exceptionHandlingStrategyVisitor.ExceptionHandlingStrategyCount();
+
+
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
 //				//////Metrics
@@ -198,7 +203,7 @@ public class ExceptionFinder {
 //				metricThrowKitchenSink.put(unit.getElementName(), kitchenSinkMethods.size());
 //				metricTryScope.put(unit.getElementName(), numberOfTryScope.getNumberOfTryScope());
 //				metricFlowTypePrevalance.put(unit.getElementName(), averageNumber);
-				metricFlowQuantity.put(unit.getElementName(), numberofFlowQuantity);
+//				metricFlowQuantity.put(unit.getElementName(), numberofFlowQuantity);
 			}
 		}
 	}
@@ -449,6 +454,7 @@ public class ExceptionFinder {
 		SampleHandler.printMessage("Catch-SLOC:" + catchBlockSLOC);
 		SampleHandler.printMessage("Incomplete Implementation anti-pattern Detected Count:" + incompleteDPCount);
 		SampleHandler.printMessage("Catch & Return Null anti-pattern Detected Count:" + catchReturnNullCount);
+		SampleHandler.printMessage("Exception Handling Strategy anti-pattern Count :" + exceptionHandlingStrategyCount);
 	}
 
 	public static CompilationUnit parse(ICompilationUnit unit) {

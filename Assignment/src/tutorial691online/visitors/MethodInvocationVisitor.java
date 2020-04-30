@@ -34,6 +34,7 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	private MethodInvocation currentNode;
 	private MethodInvocation invokedMethodNode;
 	private ArrayList<String> flowHandlingActionStatements = new ArrayList<String>();
+	public ArrayList<String> exceptionList = new ArrayList<String>();
 	
 	public MethodInvocationVisitor(String statement) {
 		this.statementAccordingToVisitorType = statement;
@@ -78,6 +79,8 @@ public class MethodInvocationVisitor extends ASTVisitor{
 					ITypeBinding exceptionType = exception.getTypeDeclaration();
 					this.exceptionTypeName = exceptionType.getQualifiedName();
 					this.exceptionType = exceptionType;
+					
+					this.exceptionList.add(exceptionName);
 					// SampleHandler.printMessage("Invoked Typeeeeeeeee::::::" +
 					// this.exceptionType.toString());
 				}
@@ -101,7 +104,6 @@ public class MethodInvocationVisitor extends ASTVisitor{
 				//SampleHandler.printMessage("Invoked Method Name::::::" + methodNode.getName());	
 				//SampleHandler.printMessage("Number of exception::::::" + methodNode.getExceptionTypes().length);
 				for(ITypeBinding exception : exceptionBinding) {
-					//SampleHandler.printMessage("exception::::::" + exception.getName());
 					numberofCheckedException++;
 				}
 			}
@@ -246,4 +248,5 @@ public class MethodInvocationVisitor extends ASTVisitor{
 	public int getNumberofMethodInvoke() {
 		return numberofMethodInvoke;
 	}
+	
 }

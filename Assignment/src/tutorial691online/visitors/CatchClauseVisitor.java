@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -32,6 +33,7 @@ public class CatchClauseVisitor extends ASTVisitor{
 	private HashSet<CatchClause> emptyCatches = new HashSet<>();
 	private HashSet<CatchClause> dummyCatches = new HashSet<>();
 	private int catchReturnNullCount = 0;
+	private String catchArguments;
 	
 	@Override
 	public boolean visit(CatchClause node) {
@@ -76,7 +78,17 @@ public class CatchClauseVisitor extends ASTVisitor{
 			}
 	    }
 		
+		
+		SingleVariableDeclaration exceptionType = node.getException();
+		ITypeBinding exceptionTypeBinding = exceptionType.getType().resolveBinding();
+		catchArguments = exceptionTypeBinding.getName();
+		//SampleHandler.printMessage("catch::::::" + ThrowInCatchArgument);
+		
 		return super.visit(node);
+	}
+	
+	public String getCatchArguments() {
+		return catchArguments;	
 	}
 	
 	private boolean isfirstPatternException(CatchClause node) {

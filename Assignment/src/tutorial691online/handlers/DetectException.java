@@ -71,7 +71,7 @@ public class DetectException extends AbstractHandler {
 //				metricThrowKitchenSink = exceptionFinder.getProject_Metric_ThrowKitchenSink();
 //				metricTryScope = exceptionFinder.getProject_Metric_TryScope();
 //				metricFlowTypePrevalance = exceptionFinder.getProject_Metric_FlowTypePrevalance();
-				metricFlowQuantity = exceptionFinder.getProject_Metric_FlowQuantity();
+//				metricFlowQuantity = exceptionFinder.getProject_Metric_FlowQuantity();
 				
 				exceptionFinder.printExceptions();			
 				
@@ -100,7 +100,7 @@ public class DetectException extends AbstractHandler {
 //		createCSVMetrics("ThrowKitchenSink_AntiPattern", metricThrowKitchenSink);
 //		createCSVMetrics("TryScope", metricTryScope);
 //		createCSVMetrics("FlowTypePrevalance", metricFlowTypePrevalance);
-		createCSVMetrics("FlowQuantity", metricFlowQuantity);
+//		createCSVMetrics("FlowQuantity", metricFlowQuantity);
 		
 		SampleHandler.printMessage("DONE DETECTING");
 		return null;
