@@ -47,6 +47,7 @@ public class DetectException extends AbstractHandler {
 		Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 		Map<String, Integer> metricExceptionHandlingStrategy = new HashMap<String, Integer>();
 		Map<String, Integer> metricFlowSourceDeclared = new HashMap<String, Integer>();
+		Map<String, Integer> metricCatchRecoverability = new HashMap<String, Integer>();
 
 		for(IProject project : projects) {
 			SampleHandler.printMessage("DETECTING IN: " + project.getName());
@@ -75,8 +76,9 @@ public class DetectException extends AbstractHandler {
 //				metricTryScope = exceptionFinder.getProject_Metric_TryScope();
 //				metricFlowTypePrevalance = exceptionFinder.getProject_Metric_FlowTypePrevalance();
 //				metricFlowQuantity = exceptionFinder.getProject_Metric_FlowQuantity();
-				metricExceptionHandlingStrategy = exceptionFinder.getProject_Metric_ExceptionHandlingStrategy();
-				metricFlowSourceDeclared = exceptionFinder.getProject_Metric_FlowSourceDeclared();
+//				metricExceptionHandlingStrategy = exceptionFinder.getProject_Metric_ExceptionHandlingStrategy();
+//				metricFlowSourceDeclared = exceptionFinder.getProject_Metric_FlowSourceDeclared();
+				metricCatchRecoverability = exceptionFinder.getProject_Metric_CatchRecoverability();
 				
 				exceptionFinder.printExceptions();			
 				
@@ -106,8 +108,9 @@ public class DetectException extends AbstractHandler {
 //		createCSVMetrics("TryScope", metricTryScope);
 //		createCSVMetrics("FlowTypePrevalance", metricFlowTypePrevalance);
 //		createCSVMetrics("FlowQuantity", metricFlowQuantity);
-		createCSVMetrics("ExceptionHandlingStrategy_AntiPattern", metricExceptionHandlingStrategy);
-		createCSVMetrics("FlowSourceDeclared", metricFlowSourceDeclared);
+//		createCSVMetrics("ExceptionHandlingStrategy_AntiPattern", metricExceptionHandlingStrategy);
+//		createCSVMetrics("FlowSourceDeclared", metricFlowSourceDeclared);
+		createCSVMetrics("CatchRecoverability_AntiPattern", metricCatchRecoverability);
 		
 		SampleHandler.printMessage("DONE DETECTING");
 		return null;

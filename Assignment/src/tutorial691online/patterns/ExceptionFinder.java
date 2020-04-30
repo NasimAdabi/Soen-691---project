@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import tutorial691online.handlers.CSVCreator;
 import tutorial691online.handlers.SampleHandler;
 import tutorial691online.visitors.CatchClauseVisitor;
+import tutorial691online.visitors.CatchRecoverabilityVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
 import tutorial691online.visitors.ExceptionHandlingStrategyVisitor;
 import tutorial691online.visitors.FlowQuantityVisitor;
@@ -71,9 +72,11 @@ public class ExceptionFinder {
 	private static Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricExceptionHandlingStrategy = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricFlowSourceDeclared = new HashMap<String, Integer>();
+	private static Map<String, Integer> metricCatchRecoverability = new HashMap<String, Integer>();
 
 	private int invokedMethodsCount = 0;
 	private int exceptionHandlingStrategyCount = 0;
+	private int catchRecoverabilityCount = 0;
 
 	public void findExceptions(IProject project) throws JavaModelException, URISyntaxException {
 		
@@ -179,17 +182,24 @@ public class ExceptionFinder {
 //				
 //				int numberofFlowQuantity = numberOfflowhandler.getNumberOfFlowQuantity() + numberOfflowtypeprevalance.getNumberOfFlowTypePrevalance();
 			
-				ExceptionHandlingStrategyVisitor exceptionHandlingStrategyVisitor = new ExceptionHandlingStrategyVisitor();
-				parsedCompilationUnit.accept(exceptionHandlingStrategyVisitor);
-				exceptionHandlingStrategyCount = exceptionHandlingStrategyVisitor.ExceptionHandlingStrategyCount();
+				//Exception Handling Strategy - Charactristics metric
+//				ExceptionHandlingStrategyVisitor exceptionHandlingStrategyVisitor = new ExceptionHandlingStrategyVisitor();
+//				parsedCompilationUnit.accept(exceptionHandlingStrategyVisitor);
+//				exceptionHandlingStrategyCount = exceptionHandlingStrategyVisitor.ExceptionHandlingStrategyCount();
+//
+//				//Flow Souce Declared methods
+//				SampleHandler.printMessage("-------- Flow Souce Declared methods for each class ------------");
+//				SampleHandler.printMessage("Class Name " + unit.getElementName());
+//				FlowSoucreDeclareMethods numberOfflowSoucreDeclareMethods = new FlowSoucreDeclareMethods();
+//				parsedCompilationUnit.accept(numberOfflowSoucreDeclareMethods);
+//				SampleHandler.printMessage("Number of flow source Declared " + numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
 
-				//Flow Souce Declared methods
-				SampleHandler.printMessage("-------- Flow Souce Declared methods for each class ------------");
-				SampleHandler.printMessage("Class Name " + unit.getElementName());
-				FlowSoucreDeclareMethods numberOfflowSoucreDeclareMethods = new FlowSoucreDeclareMethods();
-				parsedCompilationUnit.accept(numberOfflowSoucreDeclareMethods);
-				SampleHandler.printMessage("Number of flow source Declared " + numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
-
+				
+				//Catch Recoverability anti-pattern
+				CatchRecoverabilityVisitor catchRecoverabilityVisitor = new CatchRecoverabilityVisitor();
+				parsedCompilationUnit.accept(catchRecoverabilityVisitor);
+				catchRecoverabilityCount = catchRecoverabilityVisitor.getRecoverableExceptionCount();
+				
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
 //				//////Metrics
@@ -213,12 +223,17 @@ public class ExceptionFinder {
 //				metricTryScope.put(unit.getElementName(), numberOfTryScope.getNumberOfTryScope());
 //				metricFlowTypePrevalance.put(unit.getElementName(), averageNumber);
 //				metricFlowQuantity.put(unit.getElementName(), numberofFlowQuantity);
-				metricExceptionHandlingStrategy.put(unit.getElementName(), exceptionHandlingStrategyCount);
-				metricFlowSourceDeclared.put(unit.getElementName(), numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
+//				metricExceptionHandlingStrategy.put(unit.getElementName(), exceptionHandlingStrategyCount);
+//				metricFlowSourceDeclared.put(unit.getElementName(), numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
+				metricCatchRecoverability.put(unit.getElementName(), catchRecoverabilityCount);
 			}
 		}
 	}
 
+	public static Map<String, Integer> getProject_Metric_CatchRecoverability() {
+		return metricCatchRecoverability;
+	}
+	
 	public static Map<String, Integer> getProject_Metric_ExceptionHandlingStrategy() {
 		return metricExceptionHandlingStrategy;
 	}
