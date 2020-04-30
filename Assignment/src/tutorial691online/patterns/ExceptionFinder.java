@@ -16,6 +16,7 @@ import tutorial691online.visitors.CatchClauseVisitor;
 import tutorial691online.visitors.CommentVisitorTryAndCatch;
 import tutorial691online.visitors.ExceptionHandlingStrategyVisitor;
 import tutorial691online.visitors.FlowQuantityVisitor;
+import tutorial691online.visitors.FlowSoucreDeclareMethods;
 import tutorial691online.visitors.FlowTypePrevelanceVisitor;
 import tutorial691online.visitors.MethodInvocationVisitor;
 import tutorial691online.visitors.MethodInvokeVisitor;
@@ -69,6 +70,7 @@ public class ExceptionFinder {
 	private static Map<String, Integer> metricFlowTypePrevalance = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricFlowQuantity = new HashMap<String, Integer>();
 	private static Map<String, Integer> metricExceptionHandlingStrategy = new HashMap<String, Integer>();
+	private static Map<String, Integer> metricFlowSourceDeclared = new HashMap<String, Integer>();
 
 	private int invokedMethodsCount = 0;
 	private int exceptionHandlingStrategyCount = 0;
@@ -181,6 +183,13 @@ public class ExceptionFinder {
 				parsedCompilationUnit.accept(exceptionHandlingStrategyVisitor);
 				exceptionHandlingStrategyCount = exceptionHandlingStrategyVisitor.ExceptionHandlingStrategyCount();
 
+				//Flow Souce Declared methods
+				SampleHandler.printMessage("-------- Flow Souce Declared methods for each class ------------");
+				SampleHandler.printMessage("Class Name " + unit.getElementName());
+				FlowSoucreDeclareMethods numberOfflowSoucreDeclareMethods = new FlowSoucreDeclareMethods();
+				parsedCompilationUnit.accept(numberOfflowSoucreDeclareMethods);
+				SampleHandler.printMessage("Number of flow source Declared " + numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
+
 //				printCharacteristicsMetrics(unit.getElementName());			
 ///////////////////////////////////////////////////////////////////////////////////////				
 //				//////Metrics
@@ -205,6 +214,7 @@ public class ExceptionFinder {
 //				metricFlowTypePrevalance.put(unit.getElementName(), averageNumber);
 //				metricFlowQuantity.put(unit.getElementName(), numberofFlowQuantity);
 				metricExceptionHandlingStrategy.put(unit.getElementName(), exceptionHandlingStrategyCount);
+				metricFlowSourceDeclared.put(unit.getElementName(), numberOfflowSoucreDeclareMethods.getNumberOfFlowSouceDeclared());
 			}
 		}
 	}
@@ -215,6 +225,9 @@ public class ExceptionFinder {
 	
 	public static Map<String, Integer> getProject_Metric_ThrowKitchenSink() {
 		return metricThrowKitchenSink;
+	}
+	public static Map<String, Integer> getProject_Metric_FlowSourceDeclared() {
+		return metricFlowSourceDeclared;
 	}
 	public static Map<String, Integer> getProject_Metric_FlowQuantity() {
 		return metricFlowQuantity;
