@@ -30,9 +30,9 @@ public class CatchRecoverabilityVisitor extends ASTVisitor {
 	private boolean isRecoverableException(ITypeBinding catchExceptionType) {
 
 		if(IsSuperType("java.lang.Error", catchExceptionType) || IsSuperType("java.lang.RuntimeException", catchExceptionType)) {
-			return true;
-		}else {
 			return false;
+		}else {
+			return true;
 		}
 	}
 	
