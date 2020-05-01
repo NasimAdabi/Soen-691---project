@@ -1,0 +1,100 @@
+
+library(foreign)
+library(caret)
+library(car)
+library(nlme)
+library(rms)
+library(e1071)
+library(BiodiversityR)
+library(moments)
+library(randomForest)
+data<-read.csv("C:/Users/Mahy/Desktop/Project/Models_R/dataUnderstand_Changes_Flows.csv")
+names(data)
+summary(data)
+drop=c("File")
+data = data[,!(names(data) %in% drop)]
+summary(data)
+drop=c("post_release_bugs")
+independant=data[,!(names(data) %in% drop)]
+summary(independant)
+##########correlation
+cor(independant, method="spearman")
+correlations <- cor(independant, method="spearman") 
+highCorr <- findCorrelation(correlations, cutoff = .75)
+highCorr
+low_cor_names=names(independant[, -highCorr])
+low_cor_data= independant[(names(independant) %in% low_cor_names)]
+names(low_cor_data)
+dataforredun=low_cor_data
+#########start redun
+redun_obj = redun (~. ,data = dataforredun ,nk =0)
+redun_obj 
+after_redun= dataforredun[,!(names(dataforredun) %in% redun_obj $Out)]
+names(after_redun) 
+summary(data$post_release_bugs)
+data$post_release_bugs>0
+############model
+form=as.formula(paste("post_release_bugs>0~",paste(names(after_redun),collapse="+")))
+form
+model=glm(formula=form, data=log10(data+1), family = binomial(link = "logit"))
+model
+deviancepercentage(model)
+1-model$deviance/model$null.deviance
+summary(model)
+newform=post_release_bugs>0~AvgCyclomaticModified+CountDeclClassVariable+CountDeclMethodPublic+CountLineComment+ChangeMetrics+ChurnMetrics+PreReleaseDefects+ExceptionHandlingStrategy_AntiPattern+FlowQuantity
+newmodel=glm(formula=newform, data=log10(data+1), family = binomial(link = "logit"))
+summary(newmodel)
+names(newmodel)
+newmodel$deviance
+newmodel$null.deviance
+1-newmodel$deviance/newmodel$null.deviance
+deviancepercentage(newmodel)
+
+############creating test data from mean values to measure the effect of each metric on the model predictrion
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)*1.1+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)*1.1+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)*1.1+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)*1.1+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)*1.1+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)*1.1+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)*1.1+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)*1.1+1), FlowQuantity=log10(mean(data$FlowQuantity)+1))
+
+predict(newmodel,testdata, type="response")
+
+testdata=data.frame(AvgCyclomaticModified= log10(mean(data$AvgCyclomaticModified)+1), CountDeclClassVariable =log10(mean(data$CountDeclClassVariable)+1), CountDeclMethodPublic=log10(mean(data$CountDeclMethodPublic)+1), CountLineComment=log10(mean(data$CountLineComment)+1), ChangeMetrics=log10(mean(data$ChangeMetrics)+1), ChurnMetrics=log10(mean(data$ChurnMetrics)+1), PreReleaseDefects=log10(mean(data$PreReleaseDefects)+1), ExceptionHandlingStrategy_AntiPattern=log10(mean(data$ExceptionHandlingStrategy_AntiPattern)+1), FlowQuantity=log10(mean(data$FlowQuantity)*1.1+1))
+
+predict(newmodel,testdata, type="response")
+
+
+
+
+
+
+
